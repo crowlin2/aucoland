@@ -298,6 +298,8 @@ h3 { font-family: var(--font-sans); font-weight: 500; line-height: 1.28; }
   width: max-content;
   padding-block: 0.85rem;
   animation: assurance-ticker-scroll 24s linear infinite;
+  animation-play-state: running;
+  will-change: transform;
 }
 
 .assurance-ticker-group {
@@ -322,27 +324,13 @@ h3 { font-family: var(--font-sans); font-weight: 500; line-height: 1.28; }
   background: var(--stone-50);
 }
 
-.assurance-ticker:hover .assurance-ticker-toggle {
-  position: absolute;
-  top: 50%;
-  right: 0.55rem;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 2.15rem;
-  height: 2.15rem;
-  padding: 0;
-  border: 1px solid rgba(16,47,41,0.16);
-  border-radius: 50%;
-  background: rgba(251,250,246,0.94);
-  color: var(--green-950);
-  cursor: pointer;
-  transform: translateY(-50%);
+.assurance-ticker.is-paused .assurance-ticker-track {
+  animation-play-state: paused;
 }
-.assurance-ticker-track { animation-play-state: paused; }
 
 @keyframes assurance-ticker-scroll {
-  to { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
 .quick-form,
