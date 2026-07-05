@@ -1564,4 +1564,287 @@ textarea { resize: vertical; }
 .assurance-ticker-track { animation: none !important; }
   .assurance-ticker-group[aria-hidden="true"] { display: none; }
   .assurance-ticker-toggle { display: none; }
+}/* Conversion optimization: cold traffic */
+[hidden],
+.honeypot {
+  display: none !important;
+}
+
+.hero-content.hero-single {
+  grid-template-columns: minmax(0, 50rem);
+  align-items: center;
+}
+
+.hero-secondary {
+  max-width: 38rem;
+  margin: -0.65rem 0 1.35rem;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.98rem;
+}
+
+.hero-agreement-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #f2d2bd;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-underline-offset: 0.22rem;
+}
+
+.conversion-form {
+  scroll-margin-top: 4.5rem;
+}
+
+.optional-label {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 400;
+}
+
+.compact-section {
+  padding-block: 4rem;
+}
+
+.benefit-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.agreements-section {
+  display: grid;
+  gap: 1.5rem;
+  padding: 4.5rem max(1rem, calc((100% - var(--max)) / 2));
+  background: var(--green-900);
+  color: var(--white);
+}
+
+.agreements-copy {
+  max-width: 42rem;
+}
+
+.agreements-copy h2 {
+  color: var(--white);
+}
+
+.agreements-copy > p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.agreements-copy .button {
+  margin-top: 0.8rem;
+}
+
+.agreement-note {
+  font-size: 0.78rem;
+}
+
+.agreements-panel {
+  align-self: stretch;
+  padding: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.agreements-panel h3 {
+  margin: 0 0 0.8rem;
+  color: var(--white);
+  font-size: 1.35rem;
+}
+
+.agreements-panel ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agreements-panel li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.agreements-panel li::before {
+  content: "";
+  flex: 0 0 0.45rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #e8c5ab;
+}
+
+.agreements-panel > p {
+  margin: 0.9rem 0 0;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.82rem;
+}
+
+.process-section {
+  padding-block: 4.5rem;
+}
+
+.process-steps {
+  grid-template-columns: 1fr;
+}
+
+.finance-facts {
+  display: grid;
+  gap: 0;
+  margin: 1.35rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.finance-facts strong {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.lead-form input,
+.lead-form select {
+  min-height: 3.25rem;
+}
+
+.lead-form button[type="submit"] {
+  margin-top: 0.9rem;
+}
+
+.form-status {
+  min-height: 1.2rem;
+}
+
+.sticky-whatsapp {
+  min-height: 3.6rem;
+}
+
+@media (max-width: 699px) {
+  .hero {
+    min-height: 43rem;
+  }
+
+  .hero-content.hero-single {
+    min-height: 43rem;
+    padding-top: 3rem;
+  }
+
+  .hero-copy h1 {
+    max-width: 18ch;
+  }
+
+  .hero-facts {
+    gap: 0.45rem;
+  }
+
+  .hero-facts strong {
+    font-size: 0.96rem;
+  }
+
+  .hero-facts span {
+    font-size: 0.67rem;
+  }
+
+  .hero-actions .button,
+  .agreements-copy .button,
+  .process-section > .button {
+    width: 100%;
+  }
+
+  .benefit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .agreements-section {
+    padding-block: 3.75rem;
+  }
+
+  .capacity-card .button {
+    min-height: 3rem;
+  }
+
+  .process-steps li {
+    padding-block: 0.9rem;
+  }
+
+  .planning-copy {
+    padding-block: 3.25rem;
+  }
+
+  .map-toolbar > span {
+    max-width: 8rem;
+  }
+
+  .sticky-whatsapp {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    max-width: calc(100vw - 1.5rem);
+  }
+}
+
+@media (min-width: 700px) {
+  .agreements-section {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.7fr);
+    align-items: center;
+  }
+
+  .process-steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border-bottom: 1px solid var(--line);
+  }
+
+  .process-steps li,
+  .process-steps li:nth-child(odd),
+  .process-steps li:nth-child(even) {
+    grid-template-columns: 1fr;
+    align-content: start;
+    min-width: 0;
+    padding: 1.1rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .process-steps li:last-child {
+    border-right: 0;
+  }
+
+  .finance-facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .finance-facts strong {
+    padding: 1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+  }
+
+  .finance-facts strong:last-child {
+    border-right: 0;
+  }
+}
+
+@media (min-width: 1040px) {
+  .hero {
+    min-height: 78svh;
+  }
+
+  .hero-content.hero-single {
+    min-height: 78svh;
+    padding-block: 3.5rem 4.75rem;
+  }
+
+  .hero-copy h1 {
+    max-width: 17ch;
+  }
+
+  .contact-section.conversion-form {
+    padding-block: 4.5rem;
+  }
+
+  .agreements-section {
+    padding-block: 5rem;
+  }
 }
