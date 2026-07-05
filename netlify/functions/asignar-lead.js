@@ -84,7 +84,8 @@ export function createAssignmentHandler({
     if (!numbers.alvaro || !numbers.ana) {
       console.error("WhatsApp routing environment is incomplete.");
       return jsonResponse(500, {
-        error: "No pudimos asignar un asesor automáticamente."
+        error: "No pudimos asignar un asesor automáticamente.",
+        errorCode: "configuration_missing"
       });
     }
 
@@ -114,7 +115,8 @@ export function createAssignmentHandler({
     } catch (error) {
       console.error("WhatsApp routing failed.", error);
       return jsonResponse(500, {
-        error: "No pudimos asignar un asesor automáticamente."
+        error: "No pudimos asignar un asesor automáticamente.",
+        errorCode: "routing_unavailable"
       });
     }
   };
