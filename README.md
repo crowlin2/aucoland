@@ -52,6 +52,8 @@ WHATSAPP_ANA = 56961162680
 
 Usar solo dígitos, en formato internacional, sin `+`, espacios ni guiones.
 
+En planes sin Secrets Controller, dejar desmarcado `Contains secret values`, con `All scopes` y `Same value for all deploy contexts`. Los valores siguen fuera del frontend porque Netlify publica únicamente `dist/` y la Function los lee en servidor.
+
 Después de crear o modificar estas variables, ejecutar un nuevo deploy en Netlify. No usar prefijos públicos como `VITE_` o `NEXT_PUBLIC_`.
 
 ## Analítica
