@@ -5,7 +5,6 @@
     priceUF: 118,
     downPaymentPercent: 10,
     installments: 72,
-    whatsappNumber: "56950103278",
     agreementDiscountPercent: 15,
     agreements: []
   };
@@ -20,6 +19,9 @@
     "fbclid",
     "gclid"
   ];
+  const ASSIGNMENT_ENDPOINT = "/.netlify/functions/asignar-lead";
+  const ASSIGNMENT_TIMEOUT_MS = 8000;
+  let assignmentInFlight = false;
 
   const sectorData = {
     roble: {
@@ -233,22 +235,154 @@
     });
   }
 
+  function setControlBusy(control, busy, busyText) {
+    if (!control) return;
+    const label = control.querySelector("[data-button-label]") || control;
+
+    if (busy) {
+      if (!label.dataset.originalLabel) {
+        label.dataset.originalLabel = label.textContent.trim();
+      }
+      label.textContent = busyText;
+      control.classList.add("is-loading");
+      control.setAttribute("aria-busy", "true");
+      control.setAttribute("aria-disabled", "true");
+      if ("disabled" in control) control.disabled = true;
+      return;
+    }
+
+    if (label.dataset.originalLabel) {
+      label.textContent = label.dataset.originalLabel;
+    }
+    control.classList.remove("is-loading");
+    control.removeAttribute("aria-busy");
+    control.removeAttribute("aria-disabled");
+    if ("disabled" in control) control.disabled = false;
+  }
+
+  function openPendingWhatsappWindow() {
+    const popup = window.open("", "_blank");
+    if (!popup) return null;
+
+    popup.opener = null;
+    popup.document.title = "Conectando con un asesor";
+    popup.document.body.textContent = "Estamos asignando un asesor...";
+    return popup;
+  }
+
+  function showWhatsappStatus(message) {
+    const status = document.querySelector("[data-whatsapp-status]");
+    if (status) status.textContent = message;
+  }
+
+  function isValidAssignment(payload) {
+    if (!payload || typeof payload !== "object") return false;
+    if (!["alvaro", "ana"].includes(payload.agentId)) return false;
+    if (typeof payload.agentName !== "string" || !payload.agentName) return false;
+    if (!/^\d{11,15}$/.test(String(payload.whatsappNumber || ""))) return false;
+    if (payload.whatsappUrl !== "https://wa.me/" + payload.whatsappNumber) return false;
+    return /^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(payload.leadId || ""));
+  }
+
+  async function requestWhatsappAssignment(contactSource, formType) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), ASSIGNMENT_TIMEOUT_MS);
+
+    trackEvent("whatsapp_assignment_requested", {
+      contact_source: contactSource,
+      form_type: formType
+    });
+
+    try {
+      const response = await fetch(ASSIGNMENT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contactSource,
+          formType
+        }),
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error("Assignment endpoint returned " + response.status);
+      }
+
+      const assignment = await response.json();
+      if (!isValidAssignment(assignment)) {
+        throw new Error("Invalid assignment response");
+      }
+
+      trackEvent("whatsapp_assignment_success", {
+        agent_id: assignment.agentId,
+        agent_name: assignment.agentName,
+        lead_id: assignment.leadId,
+        contact_source: contactSource,
+        form_type: formType
+      });
+
+      return assignment;
+    } catch (error) {
+      trackEvent("whatsapp_assignment_error", {
+        contact_source: contactSource,
+        form_type: formType,
+        error_type: error.name === "AbortError" ? "timeout" : "request_failed"
+      });
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  function buildGenericWhatsappMessage(assignment) {
+    return [
+      "Hola, vengo desde aucofamilia.com y quiero recibir información sobre sepulturas en Parque de Auco.",
+      "",
+      "Código de solicitud: " + assignment.leadId,
+      "Asesor asignado: " + assignment.agentName,
+      "Origen: aucofamilia.com"
+    ].join("\n");
+  }
+
+  function buildFormWhatsappMessage(payload, assignment) {
+    return [
+      "Hola, quiero recibir información sobre sepulturas familiares en Parque de Auco.",
+      "",
+      "Nombre: " + payload.nombre,
+      "Teléfono o WhatsApp: " + payload.telefono,
+      "Me gustaría: " + payload.objetivo,
+      "Convenio: " + (payload.convenio || "No informado"),
+      "",
+      "Código de solicitud: " + assignment.leadId,
+      "Asesor asignado: " + assignment.agentName,
+      "Origen: aucofamilia.com"
+    ].join("\n");
+  }
+
+  function openAssignedWhatsapp(assignment, message, pendingWindow, contactSource, formType) {
+    const whatsappUrl = assignment.whatsappUrl + "?text=" + encodeURIComponent(message);
+
+    trackEvent("whatsapp_opened", {
+      agent_id: assignment.agentId,
+      agent_name: assignment.agentName,
+      lead_id: assignment.leadId,
+      contact_source: contactSource,
+      form_type: formType
+    });
+
+    if (pendingWindow && !pendingWindow.closed) {
+      pendingWindow.location.replace(whatsappUrl);
+    } else {
+      window.location.assign(whatsappUrl);
+    }
+  }
+
   function setupLeadIntent() {
     const form = document.querySelector("#lead-form");
     const objective = form && form.elements.objetivo;
-    const status = form && form.querySelector(".form-status");
-
-    function goToForm() {
-      if (!form) return;
-      form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-      const firstInvalid = form.querySelector(":invalid");
-      window.setTimeout(() => {
-        if (firstInvalid && typeof firstInvalid.focus === "function") firstInvalid.focus();
-      }, reduceMotion ? 0 : 450);
-    }
 
     document.querySelectorAll("[data-objective]").forEach((control) => {
-      control.addEventListener("click", (event) => {
+      control.addEventListener("click", () => {
         if (objective && control.dataset.objective) {
           objective.value = control.dataset.objective;
         }
@@ -258,24 +392,6 @@
             placement: control.closest("section")?.id || "header"
           });
         }
-
-        if (!control.hasAttribute("data-whatsapp-cta") || !form) return;
-
-        event.preventDefault();
-        if (form.checkValidity()) {
-          if (status) status.textContent = "Registraremos tu solicitud antes de abrir WhatsApp.";
-          if (typeof form.requestSubmit === "function") {
-            form.requestSubmit();
-          } else {
-            form.querySelector('button[type="submit"]')?.click();
-          }
-          return;
-        }
-
-        if (status) {
-          status.textContent = "Completa los campos obligatorios para continuar por WhatsApp.";
-        }
-        goToForm();
       });
     });
 
@@ -284,6 +400,35 @@
         trackEvent("capacity_interest", {
           capacity: Number(control.dataset.capacityOption)
         });
+      });
+    });
+  }
+
+  function setupWhatsappCtas() {
+    document.querySelectorAll("[data-whatsapp-cta]").forEach((control) => {
+      control.addEventListener("click", async (event) => {
+        event.preventDefault();
+        if (assignmentInFlight) return;
+
+        assignmentInFlight = true;
+        const contactSource = control.dataset.contactSource || "generic_cta";
+        const formType = "generic";
+        const pendingWindow = openPendingWhatsappWindow();
+        setControlBusy(control, true, "Conectando con un asesor…");
+        showWhatsappStatus("");
+
+        try {
+          const assignment = await requestWhatsappAssignment(contactSource, formType);
+          const message = buildGenericWhatsappMessage(assignment);
+          openAssignedWhatsapp(assignment, message, pendingWindow, contactSource, formType);
+        } catch (error) {
+          if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
+          showWhatsappStatus("No pudimos asignarte un asesor automáticamente. Intenta nuevamente.");
+          console.error("WhatsApp assignment failed.", error);
+        } finally {
+          assignmentInFlight = false;
+          setControlBusy(control, false);
+        }
       });
     });
   }
@@ -307,24 +452,13 @@
     return params.toString();
   }
 
-  function buildWhatsappMessage(payload) {
-    return [
-      "Hola, quiero recibir información sobre sepulturas familiares en Parque de Auco.",
-      "",
-      "Nombre: " + payload.nombre,
-      "Teléfono o WhatsApp: " + payload.telefono,
-      "Me gustaría: " + payload.objetivo,
-      "Convenio: " + (payload.convenio || "No informado")
-    ].join("\n");
-  }
-
   function setupForm() {
     const form = document.querySelector("#lead-form");
     if (!form) return;
 
     populateTrackingFields(form);
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       if (!form.checkValidity()) {
@@ -332,71 +466,78 @@
         return;
       }
 
+      if (assignmentInFlight) return;
+      assignmentInFlight = true;
+
       populateTrackingFields(form);
       const button = form.querySelector('button[type="submit"]');
       const status = form.querySelector(".form-status");
-      const payload = Object.fromEntries(new FormData(form).entries());
-      const whatsappNumber = String(config.whatsappNumber || "56950103278").replace(/\D/g, "");
-      const whatsappUrl =
-        "https://wa.me/" + whatsappNumber +
-        "?text=" + encodeURIComponent(buildWhatsappMessage(payload));
+      const contactSource = "main_form";
+      const formType = "lead_form";
+      const pendingWindow = openPendingWhatsappWindow();
 
-      button.disabled = true;
-      button.classList.add("is-loading");
-      button.setAttribute("aria-busy", "true");
-      status.textContent = "Abriendo WhatsApp y registrando tu solicitud...";
+      setControlBusy(button, true, "Conectando con un asesor…");
+      status.textContent = "";
 
       trackEvent("form_submit", {
         form_name: "auco-leads",
-        objective: payload.objetivo,
-        has_agreement: Boolean(payload.convenio),
-        utm_source: payload.utm_source || "",
-        utm_campaign: payload.utm_campaign || ""
+        objective: form.elements.objetivo.value,
+        has_agreement: Boolean(form.elements.convenio.value),
+        utm_source: form.elements.utm_source.value || "",
+        utm_campaign: form.elements.utm_campaign.value || ""
       });
 
-      const netlifySubmission = fetch(form.action || "/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: encodeFormData(new FormData(form)),
-        keepalive: true
-      });
+      try {
+        const assignment = await requestWhatsappAssignment(contactSource, formType);
 
-      trackEvent("whatsapp_open", {
-        source: "form_submit",
-        objective: payload.objetivo
-      });
+        form.elements.agent_id.value = assignment.agentId;
+        form.elements.agent_name.value = assignment.agentName;
+        form.elements.lead_id.value = assignment.leadId;
 
-      const whatsappWindow = window.open(whatsappUrl, "_blank");
-      if (whatsappWindow) {
-        whatsappWindow.opener = null;
-      } else {
-        window.location.assign(whatsappUrl);
-      }
+        const payload = Object.fromEntries(new FormData(form).entries());
+        const message = buildFormWhatsappMessage(payload, assignment);
 
-      status.textContent = "WhatsApp abierto con los datos de tu solicitud.";
-
-      netlifySubmission
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Netlify Forms respondió con estado " + response.status);
-          }
-
-          trackEvent("form_submit_success", {
-            form_name: "auco-leads",
-            objective: payload.objetivo,
-            has_agreement: Boolean(payload.convenio)
-          });
-          status.textContent = "Solicitud registrada y conversación de WhatsApp abierta.";
-        })
-        .catch((error) => {
-          status.textContent = "WhatsApp fue abierto. No pudimos confirmar el registro del formulario; puedes reintentar sin perder tus datos.";
-          console.error(error);
-        })
-        .finally(() => {
-          button.disabled = false;
-          button.classList.remove("is-loading");
-          button.removeAttribute("aria-busy");
+        const netlifySubmission = fetch(form.action || "/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: encodeFormData(new FormData(form)),
+          keepalive: true
         });
+
+        openAssignedWhatsapp(
+          assignment,
+          message,
+          pendingWindow,
+          contactSource,
+          formType
+        );
+        status.textContent = "Conversación abierta con " + assignment.agentName + ".";
+
+        netlifySubmission
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Netlify Forms returned " + response.status);
+            }
+
+            trackEvent("form_submit_success", {
+              form_name: "auco-leads",
+              objective: payload.objetivo,
+              has_agreement: Boolean(payload.convenio)
+            });
+            status.textContent = "Solicitud registrada y conversación abierta con " + assignment.agentName + ".";
+          })
+          .catch((error) => {
+            status.textContent = "La conversación fue abierta. No pudimos confirmar el registro del formulario; puedes reintentar sin perder tus datos.";
+            console.error("Netlify form submission failed.", error);
+          });
+      } catch (error) {
+        if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
+        status.textContent = "No pudimos asignarte un asesor automáticamente. Intenta nuevamente.";
+        console.error("WhatsApp assignment failed.", error);
+      } finally {
+        assignmentInFlight = false;
+        setControlBusy(button, false);
+      }
     });
   }
 
@@ -693,6 +834,7 @@
   applyCommercialConfig();
   setupTicker();
   setupLeadIntent();
+  setupWhatsappCtas();
   setupForm();
   setupSectorGallery();
   setupMap();

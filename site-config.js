@@ -3,7 +3,6 @@
     priceUF: 118,
     downPaymentPercent: 10,
     installments: 72,
-    whatsappNumber: "56950103278",
     agreementDiscountPercent: 15,
     agreements: Object.freeze([
       "Carabineros de Chile",
