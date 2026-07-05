@@ -667,6 +667,8 @@
         utm_campaign: form.elements.utm_campaign.value || ""
       });
 
+      const pendingWindow = openPendingWhatsappWindow();
+
       try {
         const assignment = await requestWhatsappAssignment(contactSource, formType);
         const nationalPhone = normalizeChileanMobile(form.elements.telefono_nacional.value);
@@ -683,42 +685,45 @@
 
         const payload = Object.fromEntries(new FormData(form).entries());
         const message = buildFormWhatsappMessage(payload, assignment);
-        const whatsappUrl = assignment.whatsappUrl + "?text=" + encodeURIComponent(message);
 
-        const response = await fetch(form.action || "/", {
+        const netlifySubmission = fetch(form.action || "/", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: encodeFormData(new FormData(form))
+          body: encodeFormData(new FormData(form)),
+          keepalive: true
         });
 
-        if (!response.ok) {
-          throw new Error("netlify_submit_failed");
-        }
+        openAssignedWhatsapp(
+          assignment,
+          message,
+          pendingWindow,
+          contactSource,
+          formType
+        );
+        status.textContent = "Conversacion abierta con " + assignment.agentName + ".";
 
-        trackEvent("form_submit_success", {
-          form_name: "leads-parque-auco",
-          objective: payload.objetivo,
-          has_agreement: Boolean(payload.convenio),
-          lead_id: assignment.leadId
-        });
+        netlifySubmission
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Netlify Forms returned " + response.status);
+            }
 
-        saveThankYouState({
-          leadId: assignment.leadId,
-          whatsappUrl,
-          agentName: assignment.agentName,
-          submittedAt,
-          conversionPending: true
-        });
-
-        window.location.assign("/gracias");
+            trackEvent("form_submit_success", {
+              form_name: "leads-parque-auco",
+              objective: payload.objetivo,
+              has_agreement: Boolean(payload.convenio),
+              lead_id: assignment.leadId
+            });
+            status.textContent = "Solicitud registrada y conversacion abierta con " + assignment.agentName + ".";
+          })
+          .catch((error) => {
+            status.textContent = "La conversacion fue abierta. No pudimos confirmar el registro del formulario; puedes reintentar sin perder tus datos.";
+            console.error("Netlify form submission failed.", error);
+          });
       } catch (error) {
-        if (String(error && error.message) === "netlify_submit_failed") {
-          status.textContent = "No pudimos enviar tu solicitud. Revisa tu conexion e intentalo nuevamente.";
-          console.error("Netlify form submission failed.", error);
-        } else {
-          status.textContent = "No pudimos asignarte un asesor automaticamente. Intenta nuevamente.";
-          console.error("WhatsApp assignment failed.", error);
-        }
+        if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
+        status.textContent = "No pudimos asignarte un asesor automaticamente. Intenta nuevamente.";
+        console.error("WhatsApp assignment failed.", error);
       } finally {
         assignmentInFlight = false;
         setControlBusy(button, false);
@@ -1079,4 +1084,5 @@
   setupFaq();
   trackEvent("page_view", { page_path: window.location.pathname });
 })();
+
 
