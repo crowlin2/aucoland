@@ -22,6 +22,7 @@
   const ASSIGNMENT_ENDPOINT = "/.netlify/functions/asignar-lead";
   const ASSIGNMENT_TIMEOUT_MS = 8000;
   let assignmentInFlight = false;
+  const completedLeadEvents = new Set();
 
   const sectorData = {
     roble: {
@@ -109,7 +110,7 @@
 
     window.dataLayer = window.dataLayer || [];
 
-    if (gtmId) {
+    if (gtmId && !document.querySelector('script[src*="googletagmanager.com/gtm.js?id="]')) {
       window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
       injectScript("https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(gtmId), "auco-gtm");
     }
@@ -156,6 +157,17 @@
         window.fbq("trackCustom", name, safeParameters);
       }
     }
+  }
+
+  function pushLeadFormSuccess(leadId) {
+    if (!leadId || completedLeadEvents.has(leadId)) return;
+
+    completedLeadEvents.add(leadId);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "lead_form_success",
+      lead_id: leadId
+    });
   }
 
   function applyCommercialConfig() {
@@ -504,6 +516,7 @@
           keepalive: true
         });
 
+        pushLeadFormSuccess(assignment.leadId);
         openAssignedWhatsapp(
           assignment,
           message,
