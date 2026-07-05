@@ -34,6 +34,13 @@ function readInternationalNumber(value) {
   return raw;
 }
 
+function readEnvironmentValue(key, environment) {
+  if (environment) return environment[key];
+
+  const netlifyValue = globalThis.Netlify?.env?.get?.(key);
+  return netlifyValue ?? process.env[key];
+}
+
 function requestComesFromSameOrigin(request) {
   const origin = request.headers.get("origin");
   if (!origin) return true;
@@ -59,7 +66,7 @@ function createLeadId(now, randomBytesImpl) {
 
 export function createAssignmentHandler({
   getStoreImpl = getStore,
-  environment = process.env,
+  environment,
   randomBytesImpl = randomBytes,
   now = () => new Date()
 } = {}) {
@@ -77,8 +84,12 @@ export function createAssignmentHandler({
     }
 
     const numbers = {
-      alvaro: readInternationalNumber(environment.WHATSAPP_ALVARO),
-      ana: readInternationalNumber(environment.WHATSAPP_ANA)
+      alvaro: readInternationalNumber(
+        readEnvironmentValue("WHATSAPP_ALVARO", environment)
+      ),
+      ana: readInternationalNumber(
+        readEnvironmentValue("WHATSAPP_ANA", environment)
+      )
     };
 
     if (!numbers.alvaro || !numbers.ana) {
