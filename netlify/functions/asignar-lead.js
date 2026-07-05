@@ -37,7 +37,8 @@ function readInternationalNumber(value) {
 function readEnvironmentValue(key, environment) {
   if (environment) return environment[key];
 
-  const netlifyValue = globalThis.Netlify?.env?.get?.(key);
+  const netlifyValue =
+    typeof Netlify !== "undefined" ? Netlify.env?.get?.(key) : undefined;
   return netlifyValue ?? process.env[key];
 }
 
@@ -96,7 +97,9 @@ export function createAssignmentHandler({
       console.error("WhatsApp routing environment is incomplete.");
       return jsonResponse(500, {
         error: "No pudimos asignar un asesor automáticamente.",
-        errorCode: "configuration_missing"
+        errorCode: !numbers.alvaro
+          ? "configuration_alvaro_invalid"
+          : "configuration_ana_invalid"
       });
     }
 
