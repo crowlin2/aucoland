@@ -746,19 +746,24 @@
     }
 
     const autoOpenKey = "whatsappAutoOpened:" + thankYouState.leadId;
-    let whatsappOpened = false;
+    let autoOpenTriggered = false;
 
-    const openWhatsAppOnce = () => {
-      if (whatsappOpened) return;
-      whatsappOpened = true;
-      window.location.replace(thankYouState.whatsappUrl);
+    const openWhatsApp = () => {
+      window.location.href = thankYouState.whatsappUrl;
+    };
+
+    const openWhatsAppAutomatically = () => {
+      if (autoOpenTriggered) return;
+      autoOpenTriggered = true;
+      sessionStorage.setItem(autoOpenKey, "true");
+      openWhatsApp();
     };
 
     if (whatsappButton) {
       whatsappButton.setAttribute("href", thankYouState.whatsappUrl);
       whatsappButton.addEventListener("click", (event) => {
         event.preventDefault();
-        openWhatsAppOnce();
+        openWhatsApp();
       });
     }
 
@@ -767,13 +772,8 @@
       return;
     }
 
-    const openFromThankYou = () => {
-      sessionStorage.setItem(autoOpenKey, "true");
-      openWhatsAppOnce();
-    };
-
     if (status) status.textContent = "Abriendo WhatsApp...";
-    reportGoogleAdsConversion(thankYouState.leadId, openFromThankYou);
+    reportGoogleAdsConversion(thankYouState.leadId, openWhatsAppAutomatically);
   }
 
   function setupSectorGallery() {

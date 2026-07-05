@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --ink: #17231f;
   --green-950: #102f29;
   --green-900: #16443b;
@@ -1992,4 +1992,17 @@ textarea { resize: vertical; }
   display: inline-flex;
   margin-top: 1rem;
   text-decoration: none;
+
+.thanks-card .button-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.thanks-card .button-whatsapp img {
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: contain;
+}
 }
