@@ -312,6 +312,7 @@
       "Hola, quiero recibir información sobre sepulturas familiares en Parque de Auco.",
       "",
       "Nombre: " + payload.nombre,
+      "Teléfono o WhatsApp: " + payload.telefono,
       "Me gustaría: " + payload.objetivo,
       "Convenio: " + (payload.convenio || "No informado")
     ].join("\n");
@@ -323,7 +324,7 @@
 
     populateTrackingFields(form);
 
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener("submit", (event) => {
       event.preventDefault();
 
       if (!form.checkValidity()) {
@@ -335,69 +336,67 @@
       const button = form.querySelector('button[type="submit"]');
       const status = form.querySelector(".form-status");
       const payload = Object.fromEntries(new FormData(form).entries());
-      let whatsappWindow = null;
+      const whatsappNumber = String(config.whatsappNumber || "56950103278").replace(/\D/g, "");
+      const whatsappUrl =
+        "https://wa.me/" + whatsappNumber +
+        "?text=" + encodeURIComponent(buildWhatsappMessage(payload));
 
-      try {
-        whatsappWindow = window.open("", "_blank");
-        if (whatsappWindow) {
-          whatsappWindow.opener = null;
-          whatsappWindow.document.title = "Abriendo WhatsApp";
-          whatsappWindow.document.body.textContent = "Estamos registrando tu solicitud...";
-        }
+      button.disabled = true;
+      button.classList.add("is-loading");
+      button.setAttribute("aria-busy", "true");
+      status.textContent = "Abriendo WhatsApp y registrando tu solicitud...";
 
-        button.disabled = true;
-        button.classList.add("is-loading");
-        button.setAttribute("aria-busy", "true");
-        status.textContent = "Registrando tu solicitud...";
+      trackEvent("form_submit", {
+        form_name: "auco-leads",
+        objective: payload.objetivo,
+        has_agreement: Boolean(payload.convenio),
+        utm_source: payload.utm_source || "",
+        utm_campaign: payload.utm_campaign || ""
+      });
 
-        trackEvent("form_submit", {
-          form_name: "auco-leads",
-          objective: payload.objetivo,
-          has_agreement: Boolean(payload.convenio),
-          utm_source: payload.utm_source || "",
-          utm_campaign: payload.utm_campaign || ""
-        });
+      const netlifySubmission = fetch(form.action || "/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: encodeFormData(new FormData(form)),
+        keepalive: true
+      });
 
-        const response = await fetch(form.action || "/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: encodeFormData(new FormData(form))
-        });
+      trackEvent("whatsapp_open", {
+        source: "form_submit",
+        objective: payload.objetivo
+      });
 
-        if (!response.ok) {
-          throw new Error("Netlify Forms respondió con estado " + response.status);
-        }
-
-        trackEvent("form_submit_success", {
-          form_name: "auco-leads",
-          objective: payload.objetivo,
-          has_agreement: Boolean(payload.convenio)
-        });
-
-        status.textContent = "Solicitud registrada. Abriremos WhatsApp para continuar.";
-        const whatsappUrl =
-          "https://wa.me/" + config.whatsappNumber +
-          "?text=" + encodeURIComponent(buildWhatsappMessage(payload));
-
-        trackEvent("whatsapp_open", {
-          source: "form_success",
-          objective: payload.objetivo
-        });
-
-        if (whatsappWindow && !whatsappWindow.closed) {
-          whatsappWindow.location.replace(whatsappUrl);
-        } else {
-          window.location.assign(whatsappUrl);
-        }
-      } catch (error) {
-        if (whatsappWindow && !whatsappWindow.closed) whatsappWindow.close();
-        status.textContent = "No pudimos registrar la solicitud. Tus datos siguen aquí; revisa tu conexión e inténtalo nuevamente.";
-        console.error(error);
-      } finally {
-        button.disabled = false;
-        button.classList.remove("is-loading");
-        button.removeAttribute("aria-busy");
+      const whatsappWindow = window.open(whatsappUrl, "_blank");
+      if (whatsappWindow) {
+        whatsappWindow.opener = null;
+      } else {
+        window.location.assign(whatsappUrl);
       }
+
+      status.textContent = "WhatsApp abierto con los datos de tu solicitud.";
+
+      netlifySubmission
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Netlify Forms respondió con estado " + response.status);
+          }
+
+          trackEvent("form_submit_success", {
+            form_name: "auco-leads",
+            objective: payload.objetivo,
+            has_agreement: Boolean(payload.convenio)
+          });
+          status.textContent = "Solicitud registrada y conversación de WhatsApp abierta.";
+        })
+        .catch((error) => {
+          status.textContent = "WhatsApp fue abierto. No pudimos confirmar el registro del formulario; puedes reintentar sin perder tus datos.";
+          console.error(error);
+        })
+        .finally(() => {
+          button.disabled = false;
+          button.classList.remove("is-loading");
+          button.removeAttribute("aria-busy");
+        });
     });
   }
 
