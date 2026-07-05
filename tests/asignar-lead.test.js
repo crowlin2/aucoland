@@ -91,24 +91,29 @@ test("rechaza métodos distintos de POST sin consumir una asignación", async ()
   assert.equal(storeRequested, false);
 });
 
-test("falla de forma controlada si falta una variable de entorno", async () => {
-  let storeRequested = false;
+test("usa el respaldo del servidor si falta una variable de entorno", async () => {
+  const memory = createMemoryStore();
   const handler = createAssignmentHandler({
-    getStoreImpl() {
-      storeRequested = true;
-      throw new Error("No debería abrir el store");
-    },
+    getStoreImpl: () => memory.store,
     environment: {
       WHATSAPP_ALVARO: "56900000001"
-    }
+    },
+    randomBytesImpl: () => Buffer.from("AB12CD", "hex"),
+    now: () => new Date("2026-07-05T12:00:00.000Z")
   });
 
   const response = await handler(createPostRequest());
   const payload = await response.json();
 
-  assert.equal(response.status, 500);
-  assert.equal(payload.error, "No pudimos asignar un asesor automáticamente.");
-  assert.equal(storeRequested, false);
+  assert.equal(response.status, 200);
+  assert.equal(payload.agentId, "alvaro");
+  assert.equal(payload.whatsappNumber, "56900000001");
+
+  const secondResponse = await handler(createPostRequest());
+  const secondPayload = await secondResponse.json();
+
+  assert.equal(secondPayload.agentId, "ana");
+  assert.equal(secondPayload.whatsappNumber, "56961162680");
 });
 
 test("no permite seleccionar un asesor desde el cuerpo de la solicitud", async () => {

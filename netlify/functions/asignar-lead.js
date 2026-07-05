@@ -4,6 +4,11 @@ import { randomBytes } from "node:crypto";
 const STORE_NAME = "whatsapp-routing";
 const ASSIGNMENT_KEY = "last-assigned";
 
+const FALLBACK_NUMBERS = Object.freeze({
+  alvaro: "56988263485",
+  ana: "56961162680"
+});
+
 const AGENTS = Object.freeze({
   alvaro: Object.freeze({
     agentId: "alvaro",
@@ -85,23 +90,15 @@ export function createAssignmentHandler({
     }
 
     const numbers = {
-      alvaro: readInternationalNumber(
-        readEnvironmentValue("WHATSAPP_ALVARO", environment)
-      ),
-      ana: readInternationalNumber(
-        readEnvironmentValue("WHATSAPP_ANA", environment)
-      )
+      alvaro:
+        readInternationalNumber(
+          readEnvironmentValue("WHATSAPP_ALVARO", environment)
+        ) || FALLBACK_NUMBERS.alvaro,
+      ana:
+        readInternationalNumber(
+          readEnvironmentValue("WHATSAPP_ANA", environment)
+        ) || FALLBACK_NUMBERS.ana
     };
-
-    if (!numbers.alvaro || !numbers.ana) {
-      console.error("WhatsApp routing environment is incomplete.");
-      return jsonResponse(500, {
-        error: "No pudimos asignar un asesor automáticamente.",
-        errorCode: !numbers.alvaro
-          ? "configuration_alvaro_invalid"
-          : "configuration_ana_invalid"
-      });
-    }
 
     try {
       const store = getStoreImpl({
