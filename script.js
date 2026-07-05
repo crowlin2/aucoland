@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   "use strict";
 
   const config = window.AUCO_CONFIG || {
@@ -21,52 +21,54 @@
   ];
   const ASSIGNMENT_ENDPOINT = "/.netlify/functions/asignar-lead";
   const ASSIGNMENT_TIMEOUT_MS = 8000;
+  const THANK_YOU_STORAGE_KEY = "aucoThankYouState";
+  const THANK_YOU_MAX_AGE_MS = 10 * 60 * 1000;
+  const THANK_YOU_CONVERSION_SEND_TO = "AW-18301399998/JF83CJLfscscEL7n5JZE";
   let assignmentInFlight = false;
-  const completedLeadEvents = new Set();
 
   const sectorData = {
     roble: {
       tag: "Sector Roble",
-      name: "Sombra, amplitud y árboles maduros",
+      name: "Sombra, amplitud y ÃƒÂ¡rboles maduros",
       description: "Alternativas familiares de 4 y 8 capacidades.",
       image: "assets/fotos/sector-roble.webp",
-      alt: "Sector Roble con pradera, árboles maduros y una banca"
+      alt: "Sector Roble con pradera, ÃƒÂ¡rboles maduros y una banca"
     },
     maiten: {
-      tag: "Sector Maitén",
+      tag: "Sector MaitÃƒÂ©n",
       name: "Un entorno abierto y luminoso",
       description: "Alternativas familiares de 4 y 6 capacidades.",
       image: "assets/fotos/banca-parque-auco.webp",
-      alt: "Sector Maitén con pradera abierta, árboles y cordillera"
+      alt: "Sector MaitÃƒÂ©n con pradera abierta, ÃƒÂ¡rboles y cordillera"
     },
     quillay: {
       tag: "Sector Quillay",
       name: "Naturaleza y vistas a la cordillera",
       description: "Alternativas familiares de 2 y 4 capacidades.",
       image: "assets/fotos/panoramica-parque-auco.webp",
-      alt: "Áreas verdes del parque con vistas a la cordillera"
+      alt: "ÃƒÂreas verdes del parque con vistas a la cordillera"
     },
     peumo: {
       tag: "Sector Peumo",
-      name: "Un paisaje familiar entre árboles",
+      name: "Un paisaje familiar entre ÃƒÂ¡rboles",
       description: "Alternativas familiares de 4 capacidades.",
       image: "assets/fotos/pradera-parque-auco.webp",
-      alt: "Senderos y vegetación del parque en Sector Peumo"
+      alt: "Senderos y vegetaciÃƒÂ³n del parque en Sector Peumo"
     }
   };
 
   const mapData = {
     atencion: {
-      tag: "Punto de atención",
-      title: "Atención Comercial",
-      description: "Punto de orientación y coordinación de visitas.",
+      tag: "Punto de atenciÃƒÂ³n",
+      title: "AtenciÃƒÂ³n Comercial",
+      description: "Punto de orientaciÃƒÂ³n y coordinaciÃƒÂ³n de visitas.",
       image: "assets/fotos/instalaciones-aereas-auco.webp",
-      imageAlt: "Vista aérea de las instalaciones de Parque de Auco"
+      imageAlt: "Vista aÃƒÂ©rea de las instalaciones de Parque de Auco"
     },
     capilla: {
       tag: "Punto del parque",
       title: "Capilla",
-      description: "Ubicación de la capilla dentro del parque.",
+      description: "UbicaciÃƒÂ³n de la capilla dentro del parque.",
       image: "assets/fotos/capilla-auco-mejorada.webp",
       imageAlt: "Exterior de la Capilla de Parque de Auco"
     },
@@ -79,8 +81,8 @@
     },
     anforas: {
       tag: "Punto del parque",
-      title: "Sector Ánforas",
-      description: "Área identificada en el plano del parque."
+      title: "Sector ÃƒÂnforas",
+      description: "ÃƒÂrea identificada en el plano del parque."
     },
     nichos: {
       tag: "Punto del parque",
@@ -90,7 +92,7 @@
     plaza: {
       tag: "Punto de referencia",
       title: "Plaza de la Cruz",
-      description: "Punto central cercano al acceso y Atención Comercial."
+      description: "Punto central cercano al acceso y AtenciÃƒÂ³n Comercial."
     }
   };
 
@@ -153,22 +155,165 @@
     }
   }
 
-  function pushLeadFormSuccess(leadId) {
-    if (!leadId || completedLeadEvents.has(leadId)) return;
+  function normalizeChileanMobile(value) {
+    let digits = String(value || "").replace(/\D/g, "");
 
-    completedLeadEvents.add(leadId);
+    if (digits.startsWith("56") && digits.length > 9) {
+      digits = digits.slice(2);
+    }
+
+    if (digits.startsWith("09") && digits.length === 10) {
+      digits = digits.slice(1);
+    }
+
+    return digits.slice(0, 9);
+  }
+
+  function isValidChileanMobile(value) {
+    return /^9\d{8}$/.test(String(value || ""));
+  }
+
+  function buildInternationalPhone(nationalPhone) {
+    return isValidChileanMobile(nationalPhone) ? "+56" + nationalPhone : "";
+  }
+
+  function getFieldErrorElement(form, fieldName) {
+    return form.querySelector('[data-field-error-for="' + fieldName + '"]');
+  }
+
+  function clearFieldError(form, field) {
+    if (!field) return;
+    field.setCustomValidity("");
+    field.removeAttribute("aria-invalid");
+    field.closest("label")?.classList.remove("is-invalid");
+    field.closest(".phone-input-group")?.classList.remove("is-invalid");
+    const error = getFieldErrorElement(form, field.name);
+    if (error) error.textContent = "";
+  }
+
+  function setFieldError(form, field, message) {
+    if (!field) return;
+    field.setAttribute("aria-invalid", "true");
+    field.closest("label")?.classList.add("is-invalid");
+    field.closest(".phone-input-group")?.classList.add("is-invalid");
+    const error = getFieldErrorElement(form, field.name);
+    if (error) error.textContent = message;
+  }
+
+  function getFieldValidationMessage(field) {
+    if (!field) return "";
+    if (field.name === "telefono_nacional") {
+      return "Ingresa un numero movil chileno valido de 9 digitos, comenzando con 9.";
+    }
+    if (field.validity.valueMissing) {
+      if (field.name === "objetivo") return "Selecciona una alternativa.";
+      return "Este campo es obligatorio.";
+    }
+    if (field.validity.patternMismatch) {
+      return "Ingresa un numero movil chileno valido de 9 digitos, comenzando con 9.";
+    }
+    return "Revisa este campo.";
+  }
+
+  function validatePhoneField(form) {
+    const field = form.elements.telefono_nacional;
+    if (!field) return true;
+
+    field.value = normalizeChileanMobile(field.value);
+    const isValid = isValidChileanMobile(field.value);
+    const message = isValid ? "" : "Ingresa un numero movil chileno valido de 9 digitos, comenzando con 9.";
+
+    field.setCustomValidity(message);
+    if (message) {
+      setFieldError(form, field, message);
+      return false;
+    }
+
+    clearFieldError(form, field);
+    return true;
+  }
+
+  function validateVisibleField(form, field) {
+    if (!field || field.disabled || field.type === "hidden" || field.name === "bot-field") {
+      return true;
+    }
+
+    if (field.name === "telefono_nacional") {
+      return validatePhoneField(form);
+    }
+
+    field.setCustomValidity("");
+    const isValid = field.checkValidity();
+    if (!isValid) {
+      setFieldError(form, field, getFieldValidationMessage(field));
+      return false;
+    }
+
+    clearFieldError(form, field);
+    return true;
+  }
+
+  function validateFormBeforeSubmit(form) {
+    const fields = Array.from(form.querySelectorAll("input, select, textarea")).filter((field) => field.name && field.type !== "hidden" && field.name !== "bot-field");
+    let firstInvalid = null;
+
+    fields.forEach((field) => {
+      const valid = validateVisibleField(form, field);
+      if (!valid && !firstInvalid) firstInvalid = field;
+    });
+
+    if (firstInvalid) {
+      firstInvalid.focus();
+      if (typeof firstInvalid.reportValidity === "function") firstInvalid.reportValidity();
+      return false;
+    }
+
+    return true;
+  }
+
+  function saveThankYouState(payload) {
+    sessionStorage.setItem(THANK_YOU_STORAGE_KEY, JSON.stringify(payload));
+  }
+
+  function readThankYouState() {
+    try {
+      const raw = sessionStorage.getItem(THANK_YOU_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function isValidThankYouState(state) {
+    if (!state || typeof state !== "object") return false;
+    if (!/^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(state.leadId || ""))) return false;
+    if (!/^https:\/\/wa\.me\/\d{11,15}\?text=/.test(String(state.whatsappUrl || ""))) return false;
+    if (typeof state.agentName !== "string" || !state.agentName.trim()) return false;
+    const submittedAt = Date.parse(String(state.submittedAt || ""));
+    if (!Number.isFinite(submittedAt)) return false;
+    return Date.now() - submittedAt <= THANK_YOU_MAX_AGE_MS;
+  }
+
+  function reportGoogleAdsConversion(leadId, callback) {
+    const conversionKey = "googleAdsConversionReported:" + leadId;
+    if (sessionStorage.getItem(conversionKey) === "true") {
+      callback();
+      return;
+    }
+
+    sessionStorage.setItem(conversionKey, "true");
     window.dataLayer = window.dataLayer || [];
 
-    if (typeof gtag === "function") {
-      gtag("event", "lead_form_success", {
-        lead_id: leadId
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "conversion", {
+        send_to: THANK_YOU_CONVERSION_SEND_TO,
+        event_callback: callback
       });
-    } else {
-      window.dataLayer.push({
-        event: "lead_form_success",
-        lead_id: leadId
-      });
+      window.setTimeout(callback, 1800);
+      return;
     }
+
+    window.setTimeout(callback, 800);
   }
 
   function applyCommercialConfig() {
@@ -244,7 +389,7 @@
       toggle.setAttribute("aria-pressed", String(paused));
       toggle.setAttribute("aria-label", paused ? "Reanudar cinta" : "Pausar cinta");
       toggle.title = paused ? "Reanudar movimiento" : "Pausar movimiento";
-      toggle.querySelector("span").textContent = paused ? "▶" : "Ⅱ";
+      toggle.querySelector("span").textContent = paused ? "Ã¢â€“Â¶" : "Ã¢â€¦Â¡";
     });
   }
 
@@ -349,9 +494,9 @@
 
   function buildGenericWhatsappMessage(assignment) {
     return [
-      "Hola, vengo desde aucofamilia.com y quiero recibir información sobre sepulturas en Parque de Auco.",
+      "Hola, vengo desde aucofamilia.com y quiero recibir informaciÃƒÂ³n sobre sepulturas en Parque de Auco.",
       "",
-      "Código de solicitud: " + assignment.leadId,
+      "CÃƒÂ³digo de solicitud: " + assignment.leadId,
       "Asesor asignado: " + assignment.agentName,
       "Origen: aucofamilia.com"
     ].join("\n");
@@ -359,14 +504,15 @@
 
   function buildFormWhatsappMessage(payload, assignment) {
     return [
-      "Hola, quiero recibir información sobre sepulturas familiares en Parque de Auco.",
+      "Hola, quiero recibir informacion sobre sepulturas familiares en Parque de Auco.",
       "",
       "Nombre: " + payload.nombre,
-      "Teléfono o WhatsApp: " + payload.telefono,
-      "Me gustaría: " + payload.objetivo,
+      "Telefono o WhatsApp: " + payload.telefono_internacional,
+      "Comuna: " + payload.comuna,
+      "Me gustaria: " + payload.objetivo,
       "Convenio: " + (payload.convenio || "No informado"),
       "",
-      "Código de solicitud: " + assignment.leadId,
+      "Codigo de solicitud: " + assignment.leadId,
       "Asesor asignado: " + assignment.agentName,
       "Origen: aucofamilia.com"
     ].join("\n");
@@ -427,7 +573,7 @@
         const contactSource = control.dataset.contactSource || "generic_cta";
         const formType = "generic";
         const pendingWindow = openPendingWhatsappWindow();
-        setControlBusy(control, true, "Conectando con un asesor…");
+        setControlBusy(control, true, "Conectando con un asesor...");
         showWhatsappStatus("");
 
         try {
@@ -436,7 +582,7 @@
           openAssignedWhatsapp(assignment, message, pendingWindow, contactSource, formType);
         } catch (error) {
           if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
-          showWhatsappStatus("No pudimos asignarte un asesor automáticamente. Intenta nuevamente.");
+          showWhatsappStatus("No pudimos asignarte un asesor automaticamente. Intenta nuevamente.");
           console.error("WhatsApp assignment failed.", error);
         } finally {
           assignmentInFlight = false;
@@ -452,9 +598,10 @@
       const input = form.elements[key];
       if (input) input.value = params.get(key) || "";
     });
-    form.elements.page_url.value = window.location.href;
-    form.elements.referrer.value = document.referrer || "";
-    form.elements.submitted_at.value = new Date().toISOString();
+    if (form.elements.page_url) form.elements.page_url.value = window.location.href;
+    if (form.elements.source_page) form.elements.source_page.value = window.location.pathname;
+    if (form.elements.referrer) form.elements.referrer.value = document.referrer || "";
+    if (form.elements.submitted_at) form.elements.submitted_at.value = new Date().toISOString();
   }
 
   function encodeFormData(formData) {
@@ -471,14 +618,35 @@
 
     populateTrackingFields(form);
 
+    const phoneField = form.elements.telefono_nacional;
+    if (phoneField) {
+      const syncPhoneValue = () => {
+        phoneField.value = normalizeChileanMobile(phoneField.value);
+        phoneField.setCustomValidity("");
+        if (!phoneField.value) clearFieldError(form, phoneField);
+      };
+
+      phoneField.addEventListener("input", syncPhoneValue);
+      phoneField.addEventListener("paste", () => window.setTimeout(syncPhoneValue, 0));
+      phoneField.addEventListener("blur", () => validatePhoneField(form));
+    }
+
+    form.querySelectorAll("input, select, textarea").forEach((field) => {
+      if (!field.name || field.type === "hidden") return;
+      const eventName = field.tagName === "SELECT" ? "change" : "input";
+      field.addEventListener(eventName, () => {
+        if (field.name === "telefono_nacional") {
+          field.value = normalizeChileanMobile(field.value);
+        }
+        if (field.checkValidity()) clearFieldError(form, field);
+      });
+      field.addEventListener("blur", () => validateVisibleField(form, field));
+    });
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
+      if (!validateFormBeforeSubmit(form)) return;
       if (assignmentInFlight) return;
       assignmentInFlight = true;
 
@@ -487,13 +655,12 @@
       const status = form.querySelector(".form-status");
       const contactSource = "main_form";
       const formType = "lead_form";
-      const pendingWindow = openPendingWhatsappWindow();
 
-      setControlBusy(button, true, "Conectando con un asesor…");
+      setControlBusy(button, true, "Enviando...");
       status.textContent = "";
 
       trackEvent("form_submit", {
-        form_name: "auco-leads",
+        form_name: "leads-parque-auco",
         objective: form.elements.objetivo.value,
         has_agreement: Boolean(form.elements.convenio.value),
         utm_source: form.elements.utm_source.value || "",
@@ -502,57 +669,111 @@
 
       try {
         const assignment = await requestWhatsappAssignment(contactSource, formType);
+        const nationalPhone = normalizeChileanMobile(form.elements.telefono_nacional.value);
+        const internationalPhone = buildInternationalPhone(nationalPhone);
+        const submittedAt = new Date().toISOString();
 
+        form.elements.telefono_nacional.value = nationalPhone;
+        form.elements.telefono_internacional.value = internationalPhone;
+        form.elements.submitted_at.value = submittedAt;
         form.elements.agent_id.value = assignment.agentId;
         form.elements.agent_name.value = assignment.agentName;
+        form.elements.agent_whatsapp.value = assignment.whatsappNumber;
         form.elements.lead_id.value = assignment.leadId;
 
         const payload = Object.fromEntries(new FormData(form).entries());
         const message = buildFormWhatsappMessage(payload, assignment);
+        const whatsappUrl = assignment.whatsappUrl + "?text=" + encodeURIComponent(message);
 
-        const netlifySubmission = fetch(form.action || "/", {
+        const response = await fetch(form.action || "/", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: encodeFormData(new FormData(form)),
-          keepalive: true
+          body: encodeFormData(new FormData(form))
         });
 
-        pushLeadFormSuccess(assignment.leadId);
-        openAssignedWhatsapp(
-          assignment,
-          message,
-          pendingWindow,
-          contactSource,
-          formType
-        );
-        status.textContent = "Conversación abierta con " + assignment.agentName + ".";
+        if (!response.ok) {
+          throw new Error("netlify_submit_failed");
+        }
 
-        netlifySubmission
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Netlify Forms returned " + response.status);
-            }
+        trackEvent("form_submit_success", {
+          form_name: "leads-parque-auco",
+          objective: payload.objetivo,
+          has_agreement: Boolean(payload.convenio),
+          lead_id: assignment.leadId
+        });
 
-            trackEvent("form_submit_success", {
-              form_name: "auco-leads",
-              objective: payload.objetivo,
-              has_agreement: Boolean(payload.convenio)
-            });
-            status.textContent = "Solicitud registrada y conversación abierta con " + assignment.agentName + ".";
-          })
-          .catch((error) => {
-            status.textContent = "La conversación fue abierta. No pudimos confirmar el registro del formulario; puedes reintentar sin perder tus datos.";
-            console.error("Netlify form submission failed.", error);
-          });
+        saveThankYouState({
+          leadId: assignment.leadId,
+          whatsappUrl,
+          agentName: assignment.agentName,
+          submittedAt,
+          conversionPending: true
+        });
+
+        window.location.assign("/gracias");
       } catch (error) {
-        if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
-        status.textContent = "No pudimos asignarte un asesor automáticamente. Intenta nuevamente.";
-        console.error("WhatsApp assignment failed.", error);
+        if (String(error && error.message) === "netlify_submit_failed") {
+          status.textContent = "No pudimos enviar tu solicitud. Revisa tu conexion e intentalo nuevamente.";
+          console.error("Netlify form submission failed.", error);
+        } else {
+          status.textContent = "No pudimos asignarte un asesor automaticamente. Intenta nuevamente.";
+          console.error("WhatsApp assignment failed.", error);
+        }
       } finally {
         assignmentInFlight = false;
         setControlBusy(button, false);
       }
     });
+  }
+
+  function setupThankYouPage() {
+    const page = document.querySelector("[data-thank-you-page]");
+    if (!page) return;
+
+    const copy = page.querySelector("[data-thanks-copy]");
+    const status = page.querySelector("[data-thanks-status]");
+    const whatsappButton = page.querySelector("[data-thanks-whatsapp]");
+    const thankYouState = readThankYouState();
+
+    if (!isValidThankYouState(thankYouState)) {
+      if (copy) copy.textContent = "No encontramos una solicitud valida reciente. Puedes volver al inicio y completar el formulario.";
+      if (status) status.textContent = "";
+      if (whatsappButton) {
+        whatsappButton.textContent = "Volver al inicio";
+        whatsappButton.setAttribute("href", "/");
+      }
+      return;
+    }
+
+    const autoOpenKey = "whatsappAutoOpened:" + thankYouState.leadId;
+    let whatsappOpened = false;
+
+    const openWhatsAppOnce = () => {
+      if (whatsappOpened) return;
+      whatsappOpened = true;
+      window.location.replace(thankYouState.whatsappUrl);
+    };
+
+    if (whatsappButton) {
+      whatsappButton.setAttribute("href", thankYouState.whatsappUrl);
+      whatsappButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        openWhatsAppOnce();
+      });
+    }
+
+    if (sessionStorage.getItem(autoOpenKey) === "true") {
+      if (status) status.textContent = "Si WhatsApp no se abrio automaticamente, puedes continuar manualmente.";
+      return;
+    }
+
+    const openFromThankYou = () => {
+      sessionStorage.setItem(autoOpenKey, "true");
+      openWhatsAppOnce();
+    };
+
+    if (status) status.textContent = "Abriendo WhatsApp...";
+    reportGoogleAdsConversion(thankYouState.leadId, openFromThankYou);
   }
 
   function setupSectorGallery() {
@@ -850,6 +1071,7 @@
   setupLeadIntent();
   setupWhatsappCtas();
   setupForm();
+  setupThankYouPage();
   setupSectorGallery();
   setupMap();
   setupMotion();
@@ -857,3 +1079,4 @@
   setupFaq();
   trackEvent("page_view", { page_path: window.location.pathname });
 })();
+

@@ -21,3 +21,9 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
+
+
+[[redirects]]
+  from = "/gracias"
+  to = "/gracias/index.html"
+  status = 200

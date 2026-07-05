@@ -96,31 +96,47 @@
           </figure>
         </div>
 
-        <form class="lead-form full-form" id="lead-form" name="auco-leads" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
-          <input type="hidden" name="form-name" value="auco-leads">
+        <form class="lead-form full-form" id="lead-form" name="leads-parque-auco" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+          <input type="hidden" name="form-name" value="leads-parque-auco">
           <p class="honeypot" hidden><label>No completar este campo<input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
           <div class="form-intro">
             <span>Solicitud de contacto</span>
-            <h3>Cuéntanos cómo podemos ayudarte</h3>
-            <p>Un ejecutivo podrá orientarte y coordinar una visita al parque.</p>
+            <h3>Cu&eacute;ntanos c&oacute;mo podemos ayudarte</h3>
+            <p>Un ejecutivo podr&aacute; orientarte y coordinar una visita al parque.</p>
           </div>
           <div class="form-grid">
-            <label>Nombre<input type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required></label>
-            <label>Teléfono o WhatsApp<input type="tel" name="telefono" autocomplete="tel" inputmode="tel" placeholder="+56 9 1234 5678" required></label>
-            <label>¿Qué te gustaría hacer?
+            <label>Nombre
+              <input type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required>
+              <span class="field-error" data-field-error-for="nombre" aria-live="polite"></span>
+            </label>
+            <label>Tel&eacute;fono o WhatsApp
+              <span class="phone-input-group">
+                <span class="phone-prefix" aria-hidden="true">+56</span>
+                <input type="tel" name="telefono_nacional" autocomplete="tel-national" inputmode="numeric" maxlength="9" pattern="9[0-9]{8}" placeholder="988263485" required data-phone-input>
+              </span>
+              <span class="field-error" data-field-error-for="telefono_nacional" aria-live="polite"></span>
+            </label>
+            <label>Comuna
+              <input type="text" name="comuna" autocomplete="address-level2" placeholder="Tu comuna" required>
+              <span class="field-error" data-field-error-for="comuna" aria-live="polite"></span>
+            </label>
+            <label>&iquest;Qu&eacute; te gustar&iacute;a hacer?
               <select name="objetivo" required>
                 <option value="">Selecciona una alternativa</option>
                 <option>Agendar visita</option>
-                <option>Recibir orientación</option>
+                <option>Recibir orientaci&oacute;n</option>
                 <option>Cotizar primero</option>
               </select>
+              <span class="field-error" data-field-error-for="objetivo" aria-live="polite"></span>
             </label>
-            <label>¿Tienes convenio? <span class="optional-label">(opcional)</span>
+            <label>&iquest;Tienes convenio? <span class="optional-label">(opcional)</span>
               <select name="convenio" data-agreement-select>
                 <option value="">No tengo o no estoy seguro</option>
               </select>
+              <span class="field-error" data-field-error-for="convenio" aria-live="polite"></span>
             </label>
           </div>
+          <input type="hidden" name="telefono_internacional">
           <input type="hidden" name="utm_source">
           <input type="hidden" name="utm_medium">
           <input type="hidden" name="utm_campaign">
@@ -129,13 +145,15 @@
           <input type="hidden" name="fbclid">
           <input type="hidden" name="gclid">
           <input type="hidden" name="page_url">
+          <input type="hidden" name="source_page">
           <input type="hidden" name="referrer">
           <input type="hidden" name="submitted_at">
           <input type="hidden" name="agent_id">
           <input type="hidden" name="agent_name">
+          <input type="hidden" name="agent_whatsapp">
           <input type="hidden" name="lead_id">
           <button class="button button-primary button-full" type="submit"><span data-button-label>Continuar en WhatsApp</span></button>
-          <p class="form-note">Tus datos serán utilizados para responder esta solicitud.</p>
+          <p class="form-note">Tus datos ser&aacute;n utilizados para responder esta solicitud.</p>
           <p class="form-status" role="status" aria-live="polite"></p>
         </form>
       </section>
@@ -353,6 +371,31 @@
       <a href="#inicio">Volver arriba ↑</a>
     </footer>
 
+    <form name="leads-parque-auco" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden aria-hidden="true">
+      <input type="hidden" name="form-name" value="leads-parque-auco">
+      <input type="text" name="nombre">
+      <input type="text" name="telefono_nacional">
+      <input type="text" name="telefono_internacional">
+      <input type="text" name="comuna">
+      <input type="text" name="objetivo">
+      <input type="text" name="convenio">
+      <input type="text" name="utm_source">
+      <input type="text" name="utm_medium">
+      <input type="text" name="utm_campaign">
+      <input type="text" name="utm_content">
+      <input type="text" name="utm_term">
+      <input type="text" name="fbclid">
+      <input type="text" name="gclid">
+      <input type="text" name="page_url">
+      <input type="text" name="source_page">
+      <input type="text" name="referrer">
+      <input type="text" name="submitted_at">
+      <input type="text" name="agent_id">
+      <input type="text" name="agent_name">
+      <input type="text" name="agent_whatsapp">
+      <input type="text" name="lead_id">
+      <input type="text" name="bot-field">
+    </form>
     <script src="analytics-config.js"></script>
     <script src="site-config.js"></script>
     <script src="script.js"></script>

@@ -1886,3 +1886,110 @@ textarea { resize: vertical; }
     max-width: calc(100vw - 1.5rem);
   }
 }
+
+
+.phone-input-group {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 3.25rem;
+  border: 1px solid rgba(16,47,41,0.2);
+  border-radius: var(--radius);
+  background: var(--white);
+  overflow: hidden;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.phone-input-group:focus-within {
+  border-color: var(--green-700);
+  background: #fffefa;
+  box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.12);
+}
+
+.phone-prefix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.9rem;
+  border-right: 1px solid rgba(16,47,41,0.12);
+  background: var(--stone-100);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.phone-input-group input {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.phone-input-group input:focus {
+  box-shadow: none;
+}
+
+.field-error {
+  display: block;
+  min-height: 1rem;
+  color: #9b4b38;
+  font-size: 0.74rem;
+}
+
+.lead-form label.is-invalid {
+  color: #9b4b38;
+}
+
+.lead-form input[aria-invalid="true"],
+.lead-form select[aria-invalid="true"] {
+  border-color: #c26c56;
+  background: #fff8f5;
+}
+
+.phone-input-group.is-invalid {
+  border-color: #c26c56;
+  background: #fff8f5;
+}
+
+.thanks-body {
+  min-height: 100svh;
+  background: radial-gradient(circle at top, rgba(93,141,121,0.18), transparent 38%), linear-gradient(180deg, #f7f3ea 0%, #fbfaf6 100%);
+}
+
+.thanks-shell {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  width: min(calc(100% - 2rem), 42rem);
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.thanks-card {
+  width: 100%;
+  padding: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(251,250,246,0.97);
+  box-shadow: var(--shadow);
+}
+
+.thanks-card h1 {
+  margin-bottom: 0.9rem;
+  color: var(--green-950);
+}
+
+.thanks-copy,
+.thanks-status,
+.thanks-home {
+  color: var(--muted);
+}
+
+.thanks-status {
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.thanks-home {
+  display: inline-flex;
+  margin-top: 1rem;
+  text-decoration: none;
+}
