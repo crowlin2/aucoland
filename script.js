@@ -1,6 +1,15 @@
 (function () {
-  const WHATSAPP_NUMBER = "56950103278";
-  const whatsappMessage = "Hola, quiero recibir orientación para cotizar en Parque de Auco.";
+  "use strict";
+
+  const config = window.AUCO_CONFIG || {
+    priceUF: 118,
+    downPaymentPercent: 10,
+    installments: 72,
+    whatsappNumber: "56950103278",
+    agreementDiscountPercent: 15,
+    agreements: []
+  };
+  const analyticsConfig = window.AUCO_ANALYTICS_CONFIG || {};
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const trackingKeys = [
     "utm_source",
@@ -8,457 +17,285 @@
     "utm_campaign",
     "utm_content",
     "utm_term",
-    "gclid",
-    "fbclid"
+    "fbclid",
+    "gclid"
   ];
 
   const sectorData = {
     roble: {
       tag: "Sector Roble",
       name: "Sombra, amplitud y árboles maduros",
-      description: "Sepulturas familiares perpetuas de 4 y 8 capacidades.",
+      description: "Alternativas familiares de 4 y 8 capacidades.",
       image: "assets/fotos/sector-roble.webp",
       alt: "Sector Roble con pradera, árboles maduros y una banca"
     },
     maiten: {
       tag: "Sector Maitén",
       name: "Un entorno abierto y luminoso",
-      description: "Alternativas familiares perpetuas de 4 y 6 capacidades.",
+      description: "Alternativas familiares de 4 y 6 capacidades.",
       image: "assets/fotos/banca-parque-auco.webp",
       alt: "Sector Maitén con pradera abierta, árboles y cordillera"
     },
     quillay: {
       tag: "Sector Quillay",
       name: "Naturaleza y vistas a la cordillera",
-      description: "Alternativas familiares perpetuas de 2 y 4 capacidades.",
+      description: "Alternativas familiares de 2 y 4 capacidades.",
       image: "assets/fotos/panoramica-parque-auco.webp",
       alt: "Áreas verdes del parque con vistas a la cordillera"
     },
     peumo: {
       tag: "Sector Peumo",
       name: "Un paisaje familiar entre árboles",
-      description: "Sepulturas familiares perpetuas de 4 capacidades.",
+      description: "Alternativas familiares de 4 capacidades.",
       image: "assets/fotos/pradera-parque-auco.webp",
       alt: "Senderos y vegetación del parque en Sector Peumo"
     }
   };
 
-  const legacyData = {
-    jardines: {
-      tag: "Jardines Familiares",
-      heading: "Privacidad para el grupo familiar",
-      description: "Jardines privados de 4 o 6 capacidades con acceso delimitado y equipamiento familiar.",
-      image: "assets/fotos/jardin-familiar-auco-frondoso.webp",
-      features: [
-        "Formatos de 4 y 6 capacidades",
-        "Lápida de mármol travertino",
-        "Reja de ingreso, banca de hormigón y plantas perimetrales",
-        "Placa de homenaje Auco Legado",
-        "Dos derechos de sepultación incluidos",
-        "Un año de mantención incluido",
-        "Traslados internos de sepultados sin costo"
-      ],
-      alt: "Jardín familiar privado con cerco vegetal, portón, pasto y banca"
-    },
-    fuente: {
-      tag: "Fuente de Auco",
-      heading: "Dos configuraciones de 4 capacidades",
-      description: "Una propuesta abierta con recorridos de piedra, áreas verdes y vegetación de bajo perfil.",
-      image: "assets/fotos/auco-legado-fuente.webp",
-      features: [
-        "Familiar: 3 cuerpos enteros y 6 reducciones",
-        "Superior: 3 cuerpos enteros y 8 reducciones",
-        "Lápida de mármol travertino",
-        "Seis meses de carencia",
-        "Traslados internos de sepultados sin costo",
-        "La configuración Superior incluye dos derechos de sepultación",
-        "La configuración Superior incluye un año de mantención y placa Auco Legado"
-      ],
-      alt: "Fuente de Auco con áreas verdes, lavandas, senderos y acceso del parque"
-    }
-  };
-
-
   const mapData = {
     atencion: {
       tag: "Punto de atención",
       title: "Atención Comercial",
-      description: "Punto de orientación para cotizaciones, visitas y consultas sobre disponibilidad.",
+      description: "Punto de orientación y coordinación de visitas.",
       image: "assets/fotos/instalaciones-aereas-auco.webp",
-      imageAlt: "Vista aérea de las instalaciones y atención de Parque de Auco"
+      imageAlt: "Vista aérea de las instalaciones de Parque de Auco"
     },
     capilla: {
-      tag: "Servicio del parque",
+      tag: "Punto del parque",
       title: "Capilla",
-      description: "Ubicación de la capilla dentro del parque y acceso desde el camino principal.",
+      description: "Ubicación de la capilla dentro del parque.",
       image: "assets/fotos/capilla-auco-mejorada.webp",
       imageAlt: "Exterior de la Capilla de Parque de Auco"
     },
     santuario: {
       tag: "Referencia cercana",
       title: "Santuario Santa Teresita de Los Andes",
-      description: "Punto de referencia ubicado junto al límite poniente del parque.",
+      description: "Punto de referencia cercano al parque.",
       image: "assets/fotos/santuario-santa-teresita.webp",
       imageAlt: "Fachada principal del Santuario Santa Teresita de Los Andes"
     },
     anforas: {
-      tag: "Sector del parque",
+      tag: "Punto del parque",
       title: "Sector Ánforas",
-      description: "Área identificada en el plano para alternativas de ánforas."
+      description: "Área identificada en el plano del parque."
     },
     nichos: {
-      tag: "Servicio del parque",
+      tag: "Punto del parque",
       title: "Nichos temporales",
-      description: "Sector ubicado hacia el costado oriente del parque."
+      description: "Sector identificado hacia el costado oriente."
     },
     plaza: {
       tag: "Punto de referencia",
       title: "Plaza de la Cruz",
-      description: "Punto central de referencia cercano al acceso y a Atención Comercial."
+      description: "Punto central cercano al acceso y Atención Comercial."
     }
   };
 
-  const params = new URLSearchParams(window.location.search);
-  const trackingValues = trackingKeys.reduce((values, key) => {
-    values[key] = params.get(key) || "";
-    return values;
-  }, {});
+  function injectScript(src, id) {
+    if (id && document.getElementById(id)) return;
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = src;
+    if (id) script.id = id;
+    document.head.appendChild(script);
+  }
 
-  function pushDataLayer(payload) {
+  function initializeAnalytics() {
+    const gtmId = String(analyticsConfig.gtmId || "").trim();
+    const gaId = String(analyticsConfig.gaMeasurementId || "").trim();
+    const metaId = String(analyticsConfig.metaPixelId || "").trim();
+
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(payload);
-  }
 
-  document.querySelectorAll("[data-tracking-fields]").forEach((container) => {
-    trackingKeys.forEach((key) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = trackingValues[key];
-      container.appendChild(input);
-    });
-  });
-
-  const encodedMessage = encodeURIComponent(whatsappMessage);
-  document.querySelectorAll("[data-whatsapp-link]").forEach((link) => {
-    link.href = WHATSAPP_NUMBER
-      ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`
-      : `https://wa.me/?text=${encodedMessage}`;
-
-    link.addEventListener("click", () => {
-      pushDataLayer({
-        event: "whatsapp_click",
-        source: link.classList.contains("sticky-whatsapp") ? "sticky_mobile" : "page_cta"
-      });
-    });
-  });
-
-  const ticker = document.querySelector(".assurance-ticker");
-  const tickerToggle = document.querySelector(".assurance-ticker-toggle");
-  tickerToggle?.addEventListener("click", () => {
-    const paused = ticker.classList.toggle("is-paused");
-    tickerToggle.setAttribute("aria-pressed", String(paused));
-    tickerToggle.setAttribute("aria-label", paused ? "Reanudar cinta" : "Pausar cinta");
-    tickerToggle.title = paused ? "Reanudar movimiento" : "Pausar movimiento";
-    tickerToggle.querySelector("span").textContent = paused ? "\u25B6" : "\u2161";
-    pushDataLayer({ event: "ticker_motion_toggle", paused });
-  });
-
-  function selectMatchingOption(select, value) {
-    if (!select) return;
-    const option = Array.from(select.options).find((item) => item.value === value || item.text === value);
-    if (option) select.value = option.value;
-  }
-
-  function prefillForms(need, priority, message) {
-    document.querySelectorAll(".lead-form").forEach((form) => {
-      selectMatchingOption(form.querySelector("[name='necesidad']"), need);
-      selectMatchingOption(form.querySelector("[name='plazo_contacto']"), priority);
-
-      const messageField = form.querySelector("[name='mensaje']");
-      if (messageField && message) messageField.value = message;
-    });
-  }
-
-  document.querySelectorAll("[data-prefill]").forEach((link) => {
-    link.addEventListener("click", () => {
-      prefillForms(link.dataset.prefill, link.dataset.priority || "", "");
-      pushDataLayer({
-        event: "lead_intent_select",
-        lead_need: link.dataset.prefill,
-        source: link.closest("section")?.id || link.closest("section")?.className || "page"
-      });
-    });
-  });
-
-  const sectorStage = document.querySelector(".sector-stage");
-  const sectorVisual = document.querySelector("#sector-image");
-  const sectorTag = document.querySelector("#sector-tag");
-  const sectorName = document.querySelector("#sector-name");
-  const sectorDescription = document.querySelector("#sector-description");
-
-
-  document.querySelectorAll("[data-sector]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const sector = sectorData[button.dataset.sector];
-      if (!sector) return;
-
-      document.querySelectorAll("[data-sector]").forEach((item) => {
-        item.setAttribute("aria-selected", String(item === button));
-      });
-
-      sectorStage.classList.add("is-switching");
-      window.setTimeout(() => {
-        sectorVisual.src = sector.image;
-        sectorVisual.alt = sector.alt;
-        sectorTag.textContent = sector.tag;
-        sectorName.textContent = sector.name;
-        sectorDescription.textContent = sector.description;
-      }, reduceMotion ? 0 : 180);
-      window.setTimeout(() => {
-        sectorStage.classList.remove("is-switching");
-      }, reduceMotion ? 0 : 420);
-
-      pushDataLayer({ event: "sector_view", sector: button.dataset.sector });
-    });
-  });
-
-  const legacyStage = document.querySelector(".legacy-stage");
-  const legacyVisual = document.querySelector("#legacy-image");
-  const legacyTag = document.querySelector("#legacy-tag");
-  const legacyHeading = document.querySelector("#legacy-heading");
-  const legacyDescription = document.querySelector("#legacy-description");
-  const legacyFeatures = document.querySelector("#legacy-features");
-
-
-  document.querySelectorAll("[data-legacy]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const item = legacyData[button.dataset.legacy];
-      if (!item) return;
-
-      document.querySelectorAll("[data-legacy]").forEach((tab) => {
-        tab.setAttribute("aria-selected", String(tab === button));
-      });
-
-      legacyStage.classList.remove("is-switching");
-      void legacyStage.offsetWidth;
-      legacyStage.classList.add("is-switching");
-      window.setTimeout(() => {
-        legacyVisual.style.backgroundImage = item.image ? `url("${item.image}")` : "none";
-        legacyVisual.setAttribute("aria-label", item.alt);
-        legacyTag.textContent = item.tag;
-        legacyHeading.textContent = item.heading;
-        legacyDescription.textContent = item.description;
-        legacyFeatures.replaceChildren(...item.features.map((feature) => {
-          const li = document.createElement("li");
-          li.textContent = feature;
-          return li;
-        }));
-      }, reduceMotion ? 0 : 270);
-      window.setTimeout(() => {
-        legacyStage.classList.remove("is-switching");
-      }, reduceMotion ? 0 : 580);
-
-      pushDataLayer({ event: "legacy_view", product: button.dataset.legacy });
-    });
-  });
-
-
-  const mapCanvas = document.querySelector("#map-canvas");
-  const mapScroll = document.querySelector("#map-scroll");
-  const mapInfoTag = document.querySelector("#map-info-tag");
-  const mapInfoTitle = document.querySelector("#map-info-title");
-  const mapInfoDescription = document.querySelector("#map-info-description");
-  const mapInfoImage = document.querySelector("#map-info-image");
-  const mapZoomLevels = [1, 1.35, 1.7, 2.1];
-  let mapZoomIndex = 0;
-
-  function updateMapLocation(key) {
-    const location = mapData[key];
-    if (!location) return;
-
-    mapInfoTag.textContent = location.tag;
-    mapInfoTitle.textContent = location.title;
-    mapInfoDescription.textContent = location.description;
-
-    if (location.image) {
-      mapInfoImage.src = location.image;
-      mapInfoImage.alt = location.imageAlt;
-      mapInfoImage.hidden = false;
-    } else {
-      mapInfoImage.hidden = true;
+    if (gtmId) {
+      window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+      injectScript("https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(gtmId), "auco-gtm");
     }
 
-    document.querySelectorAll("[data-map-location]").forEach((control) => {
-      const active = control.dataset.mapLocation === key;
-      control.classList.toggle("is-active", active);
-      if (control.classList.contains("map-hotspot")) {
-        control.setAttribute("aria-pressed", String(active));
+    if (gaId) {
+      injectScript("https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(gaId), "auco-ga");
+      window.gtag = window.gtag || function () {
+        window.dataLayer.push(arguments);
+      };
+      window.gtag("js", new Date());
+      window.gtag("config", gaId, { send_page_view: false });
+    }
+
+    if (metaId) {
+      if (!window.fbq) {
+        const fbq = function () {
+          fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments);
+        };
+        fbq.push = fbq;
+        fbq.loaded = true;
+        fbq.version = "2.0";
+        fbq.queue = [];
+        window.fbq = fbq;
+        window._fbq = fbq;
       }
-    });
-
-    pushDataLayer({ event: "map_location_select", location: key });
+      injectScript("https://connect.facebook.net/en_US/fbevents.js", "auco-meta-pixel");
+      window.fbq("init", metaId);
+    }
   }
 
-  document.querySelectorAll("[data-map-location]").forEach((control) => {
-    control.addEventListener("click", () => updateMapLocation(control.dataset.mapLocation));
-  });
+  function trackEvent(name, parameters) {
+    const safeParameters = parameters || {};
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(Object.assign({ event: name }, safeParameters));
 
-
-  const mapTooltip = document.createElement("div");
-  mapTooltip.className = "map-cursor-tooltip";
-  mapTooltip.setAttribute("role", "tooltip");
-  mapTooltip.setAttribute("aria-hidden", "true");
-  const mapTooltipImage = document.createElement("img");
-  mapTooltipImage.decoding = "async";
-  mapTooltipImage.hidden = true;
-  const mapTooltipLabel = document.createElement("span");
-  mapTooltip.append(mapTooltipImage, mapTooltipLabel);
-  document.body.appendChild(mapTooltip);
-
-  function positionMapTooltip(clientX, clientY) {
-    const gap = 14;
-    const edge = 8;
-    const width = mapTooltip.offsetWidth;
-    const height = mapTooltip.offsetHeight;
-    let left = clientX + gap;
-    let top = clientY + gap;
-
-    if (left + width > window.innerWidth - edge) {
-      left = clientX - width - gap;
-      mapTooltip.style.transformOrigin = "right center";
-    } else {
-      mapTooltip.style.transformOrigin = "left center";
+    if (typeof window.gtag === "function") {
+      window.gtag("event", name, safeParameters);
     }
 
-    if (top + height > window.innerHeight - edge) {
-      top = clientY - height - gap;
+    if (typeof window.fbq === "function") {
+      if (name === "page_view") {
+        window.fbq("track", "PageView");
+      } else {
+        window.fbq("trackCustom", name, safeParameters);
+      }
     }
-
-    mapTooltip.style.left = Math.max(edge, left) + "px";
-    mapTooltip.style.top = Math.max(edge, top) + "px";
   }
 
-  function showMapTooltip(control, clientX, clientY) {
-    const location = mapData[control.dataset.mapLocation];
-    if (!location) return;
-    mapTooltipLabel.textContent = location.title;
-    if (location.image) {
-      mapTooltipImage.src = location.image;
-      mapTooltipImage.alt = location.imageAlt;
-      mapTooltipImage.hidden = false;
-    } else {
-      mapTooltipImage.hidden = true;
-      mapTooltipImage.removeAttribute("src");
-      mapTooltipImage.alt = "";
-    }
-    mapTooltip.setAttribute("aria-hidden", "false");
-    mapTooltip.classList.add("is-visible");
-    positionMapTooltip(clientX, clientY);
-  }
-
-  function hideMapTooltip() {
-    mapTooltip.classList.remove("is-visible");
-    mapTooltip.setAttribute("aria-hidden", "true");
-  }
-
-  document.querySelectorAll(".map-hotspot").forEach((hotspot) => {
-    hotspot.addEventListener("pointerenter", (event) => {
-      if (event.pointerType === "touch") return;
-      showMapTooltip(hotspot, event.clientX, event.clientY);
-    });
-
-    hotspot.addEventListener("pointermove", (event) => {
-      if (!mapTooltip.classList.contains("is-visible")) return;
-      positionMapTooltip(event.clientX, event.clientY);
-    });
-
-    hotspot.addEventListener("pointerleave", hideMapTooltip);
-    hotspot.addEventListener("blur", hideMapTooltip);
-    hotspot.addEventListener("focus", () => {
-      const rect = hotspot.getBoundingClientRect();
-      showMapTooltip(hotspot, rect.right, rect.top + rect.height / 2);
-    });
-  });
-
-  function applyMapZoom(nextIndex) {
-    mapZoomIndex = Math.max(0, Math.min(mapZoomLevels.length - 1, nextIndex));
-    const zoom = mapZoomLevels[mapZoomIndex];
-    mapCanvas.style.width = (zoom * 100) + "%";
-
-    document.querySelector("[data-map-action='zoom-out']").disabled = mapZoomIndex === 0;
-    document.querySelector("[data-map-action='zoom-in']").disabled = mapZoomIndex === mapZoomLevels.length - 1;
-
-    if (mapZoomIndex === 0) {
-      mapScroll.scrollTo({ top: 0, left: 0, behavior: reduceMotion ? "auto" : "smooth" });
-    }
-
-    pushDataLayer({ event: "map_zoom", zoom });
-  }
-
-  document.querySelectorAll("[data-map-action]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (button.dataset.mapAction === "zoom-in") applyMapZoom(mapZoomIndex + 1);
-      if (button.dataset.mapAction === "zoom-out") applyMapZoom(mapZoomIndex - 1);
-      if (button.dataset.mapAction === "reset") applyMapZoom(0);
-    });
-  });
-
-  let mapDrag = null;
-  mapScroll.addEventListener("pointerdown", (event) => {
-    if (event.target.closest("button") || mapZoomIndex === 0) return;
-    mapDrag = {
-      x: event.clientX,
-      y: event.clientY,
-      left: mapScroll.scrollLeft,
-      top: mapScroll.scrollTop
+  function applyCommercialConfig() {
+    const labels = {
+      price: "Desde " + config.priceUF + " UF",
+      "down-payment": "Pie desde " + config.downPaymentPercent + "%",
+      installments: "Hasta " + config.installments + " cuotas",
+      agreement: "Convenios con " + config.agreementDiscountPercent + "% de descuento"
     };
-    mapScroll.setPointerCapture(event.pointerId);
-  });
+    const values = {
+      price: labels.price,
+      "price-plain": config.priceUF + " UF",
+      "down-payment": labels["down-payment"],
+      "down-payment-plain": config.downPaymentPercent + "% de pie",
+      installments: labels.installments,
+      "installments-plain": config.installments + " cuotas",
+      "finance-combined": labels["down-payment"] + " y " + labels.installments.toLowerCase(),
+      "agreement-heading": labels.agreement
+    };
 
-  mapScroll.addEventListener("pointermove", (event) => {
-    if (!mapDrag) return;
-    mapScroll.scrollLeft = mapDrag.left - (event.clientX - mapDrag.x);
-    mapScroll.scrollTop = mapDrag.top - (event.clientY - mapDrag.y);
-  });
-
-  mapScroll.addEventListener("pointerup", () => {
-    mapDrag = null;
-  });
-
-  mapScroll.addEventListener("pointercancel", () => {
-    mapDrag = null;
-  });
-
-  mapCanvas.addEventListener("dblclick", () => applyMapZoom(mapZoomIndex + 1));
-  applyMapZoom(0);
-
-  document.querySelectorAll("[data-capacity-option]").forEach((link) => {
-    link.addEventListener("click", () => {
-      const value = link.dataset.capacityOption;
-      prefillForms(
-        "Sepultura familiar",
-        "",
-        `Me interesa consultar disponibilidad para una alternativa de ${value} capacidades.`
-      );
-      pushDataLayer({ event: "capacity_interest", capacity: Number(value) });
+    document.querySelectorAll("[data-config-label]").forEach((element) => {
+      const value = labels[element.dataset.configLabel];
+      if (value) element.textContent = value;
     });
-  });
+    document.querySelectorAll("[data-config-value]").forEach((element) => {
+      const value = values[element.dataset.configValue];
+      if (value) element.textContent = value;
+    });
+    document.querySelectorAll("[data-copy]").forEach((element) => {
+      const value = config.copy && config.copy[element.dataset.copy];
+      if (value) element.textContent = value;
+    });
 
-  function buildLeadWhatsappMessage(payload) {
-    return [
-      "Hola, quiero solicitar orientación en Parque de Auco.",
-      payload.nombre && `Nombre: ${payload.nombre}`,
-      payload.whatsapp && `WhatsApp: ${payload.whatsapp}`,
-      payload.comuna && `Comuna: ${payload.comuna}`,
-      payload.necesidad && `Consulta: ${payload.necesidad}`,
-      payload.plazo_contacto && `Contacto: ${payload.plazo_contacto}`,
-      payload.mensaje && `Mensaje: ${payload.mensaje}`
-    ].filter(Boolean).join("\n");
+    const list = document.querySelector("[data-agreement-list]");
+    if (list) {
+      list.replaceChildren(...config.agreements.map((agreement) => {
+        const item = document.createElement("li");
+        item.textContent = agreement;
+        return item;
+      }));
+    }
+
+    document.querySelectorAll("[data-agreement-select]").forEach((select) => {
+      config.agreements.forEach((agreement) => {
+        const option = document.createElement("option");
+        option.value = agreement;
+        option.textContent = agreement;
+        select.appendChild(option);
+      });
+      const other = document.createElement("option");
+      other.value = "Otro convenio / consultar";
+      other.textContent = "Otro convenio / consultar";
+      select.appendChild(other);
+    });
+
+    const description = document.querySelector('meta[name="description"]');
+    if (description) {
+      description.content =
+        "Sepulturas familiares perpetuas desde " + config.priceUF +
+        " UF en Parque de Auco. Alternativas de 2 a 8 capacidades, pie desde " +
+        config.downPaymentPercent + "% y hasta " + config.installments +
+        " cuotas. Agenda una visita.";
+    }
   }
 
-  document.querySelectorAll(".lead-form").forEach((form) => {
-    form.addEventListener("submit", (event) => {
+  function setupTicker() {
+    const ticker = document.querySelector(".assurance-ticker");
+    const toggle = document.querySelector(".assurance-ticker-toggle");
+    if (!ticker || !toggle) return;
+
+    toggle.addEventListener("click", () => {
+      const paused = ticker.classList.toggle("is-paused");
+      toggle.setAttribute("aria-pressed", String(paused));
+      toggle.setAttribute("aria-label", paused ? "Reanudar cinta" : "Pausar cinta");
+      toggle.title = paused ? "Reanudar movimiento" : "Pausar movimiento";
+      toggle.querySelector("span").textContent = paused ? "▶" : "Ⅱ";
+    });
+  }
+
+  function setupLeadIntent() {
+    const form = document.querySelector("#lead-form");
+    const objective = form && form.elements.objetivo;
+
+    document.querySelectorAll("[data-objective]").forEach((control) => {
+      control.addEventListener("click", () => {
+        if (objective && control.dataset.objective) {
+          objective.value = control.dataset.objective;
+        }
+
+        if (control.dataset.event === "visit_booking_click") {
+          trackEvent("visit_booking_click", {
+            placement: control.closest("section")?.id || "header"
+          });
+        }
+      });
+    });
+
+    document.querySelectorAll("[data-capacity-option]").forEach((control) => {
+      control.addEventListener("click", () => {
+        trackEvent("capacity_interest", {
+          capacity: Number(control.dataset.capacityOption)
+        });
+      });
+    });
+  }
+
+  function populateTrackingFields(form) {
+    const params = new URLSearchParams(window.location.search);
+    trackingKeys.forEach((key) => {
+      const input = form.elements[key];
+      if (input) input.value = params.get(key) || "";
+    });
+    form.elements.page_url.value = window.location.href;
+    form.elements.referrer.value = document.referrer || "";
+    form.elements.submitted_at.value = new Date().toISOString();
+  }
+
+  function encodeFormData(formData) {
+    const params = new URLSearchParams();
+    formData.forEach((value, key) => {
+      params.append(key, String(value));
+    });
+    return params.toString();
+  }
+
+  function buildWhatsappMessage(payload) {
+    return [
+      "Hola, quiero recibir información sobre sepulturas familiares en Parque de Auco.",
+      "",
+      "Nombre: " + payload.nombre,
+      "Me gustaría: " + payload.objetivo,
+      "Convenio: " + (payload.convenio || "No informado")
+    ].join("\n");
+  }
+
+  function setupForm() {
+    const form = document.querySelector("#lead-form");
+    if (!form) return;
+
+    populateTrackingFields(form);
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       if (!form.checkValidity()) {
@@ -466,93 +303,292 @@
         return;
       }
 
-      const payload = Object.fromEntries(new FormData(form).entries());
-      window.parqueAucoLastLead = payload;
-
-      pushDataLayer({
-        event: "lead_form_submit",
-        form_id: form.id,
-        form_name: form.dataset.formName || "lead",
-        lead_need: payload.necesidad,
-        lead_timing: payload.plazo_contacto,
-        comuna: payload.comuna,
-        utm_source: payload.utm_source,
-        utm_medium: payload.utm_medium,
-        utm_campaign: payload.utm_campaign,
-        utm_content: payload.utm_content,
-        utm_term: payload.utm_term,
-        gclid: payload.gclid,
-        fbclid: payload.fbclid
-      });
-
-      const leadWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildLeadWhatsappMessage(payload))}`;
-      const handoffLink = document.createElement("a");
-      handoffLink.href = leadWhatsappUrl;
-      handoffLink.target = "_blank";
-      handoffLink.rel = "noopener";
-      document.body.appendChild(handoffLink);
-      handoffLink.click();
-      handoffLink.remove();
-      pushDataLayer({ event: "lead_whatsapp_handoff", form_id: form.id });
-
+      populateTrackingFields(form);
+      const button = form.querySelector('button[type="submit"]');
       const status = form.querySelector(".form-status");
-      const button = form.querySelector("button[type='submit']");
-      if (button) {
+      const payload = Object.fromEntries(new FormData(form).entries());
+      let whatsappWindow = null;
+
+      try {
+        whatsappWindow = window.open("", "_blank");
+        if (whatsappWindow) {
+          whatsappWindow.opener = null;
+          whatsappWindow.document.title = "Abriendo WhatsApp";
+          whatsappWindow.document.body.textContent = "Estamos registrando tu solicitud...";
+        }
+
+        button.disabled = true;
         button.classList.add("is-loading");
         button.setAttribute("aria-busy", "true");
-        button.disabled = true;
+        status.textContent = "Registrando tu solicitud...";
+
+        trackEvent("form_submit", {
+          form_name: "auco-leads",
+          objective: payload.objetivo,
+          has_agreement: Boolean(payload.convenio),
+          utm_source: payload.utm_source || "",
+          utm_campaign: payload.utm_campaign || ""
+        });
+
+        const response = await fetch(form.action || "/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: encodeFormData(new FormData(form))
+        });
+
+        if (!response.ok) {
+          throw new Error("Netlify Forms respondió con estado " + response.status);
+        }
+
+        trackEvent("form_submit_success", {
+          form_name: "auco-leads",
+          objective: payload.objetivo,
+          has_agreement: Boolean(payload.convenio)
+        });
+
+        status.textContent = "Solicitud registrada. Abriremos WhatsApp para continuar.";
+        const whatsappUrl =
+          "https://wa.me/" + config.whatsappNumber +
+          "?text=" + encodeURIComponent(buildWhatsappMessage(payload));
+
+        trackEvent("whatsapp_open", {
+          source: "form_success",
+          objective: payload.objetivo
+        });
+
+        if (whatsappWindow && !whatsappWindow.closed) {
+          whatsappWindow.location.replace(whatsappUrl);
+        } else {
+          window.location.assign(whatsappUrl);
+        }
+      } catch (error) {
+        if (whatsappWindow && !whatsappWindow.closed) whatsappWindow.close();
+        status.textContent = "No pudimos registrar la solicitud. Tus datos siguen aquí; revisa tu conexión e inténtalo nuevamente.";
+        console.error(error);
+      } finally {
+        button.disabled = false;
+        button.classList.remove("is-loading");
+        button.removeAttribute("aria-busy");
+      }
+    });
+  }
+
+  function setupSectorGallery() {
+    const stage = document.querySelector(".sector-stage");
+    const image = document.querySelector("#sector-image");
+    const tag = document.querySelector("#sector-tag");
+    const name = document.querySelector("#sector-name");
+    const description = document.querySelector("#sector-description");
+    if (!stage || !image) return;
+
+    document.querySelectorAll("[data-sector]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const sector = sectorData[button.dataset.sector];
+        if (!sector) return;
+
+        document.querySelectorAll("[data-sector]").forEach((item) => {
+          item.setAttribute("aria-selected", String(item === button));
+        });
+
+        stage.classList.add("is-switching");
+        window.setTimeout(() => {
+          image.src = sector.image;
+          image.alt = sector.alt;
+          tag.textContent = sector.tag;
+          name.textContent = sector.name;
+          description.textContent = sector.description;
+        }, reduceMotion ? 0 : 180);
+        window.setTimeout(() => stage.classList.remove("is-switching"), reduceMotion ? 0 : 420);
+      });
+    });
+  }
+
+  function setupMap() {
+    const canvas = document.querySelector("#map-canvas");
+    const scroll = document.querySelector("#map-scroll");
+    const infoTag = document.querySelector("#map-info-tag");
+    const infoTitle = document.querySelector("#map-info-title");
+    const infoDescription = document.querySelector("#map-info-description");
+    const infoImage = document.querySelector("#map-info-image");
+    if (!canvas || !scroll) return;
+
+    const zoomLevels = [1, 1.35, 1.7, 2.1];
+    let zoomIndex = 0;
+    let drag = null;
+
+    function updateLocation(key) {
+      const location = mapData[key];
+      if (!location) return;
+
+      infoTag.textContent = location.tag;
+      infoTitle.textContent = location.title;
+      infoDescription.textContent = location.description;
+
+      if (location.image) {
+        infoImage.src = location.image;
+        infoImage.alt = location.imageAlt;
+        infoImage.hidden = false;
+      } else {
+        infoImage.hidden = true;
       }
 
-      window.setTimeout(() => {
-        if (status) status.textContent = "WhatsApp abierto. Revisa el mensaje y presiona enviar para completar tu solicitud.";
-        if (button) {
-          button.classList.remove("is-loading");
-          button.removeAttribute("aria-busy");
-          button.disabled = false;
-          button.textContent = "Abrir WhatsApp nuevamente";
+      document.querySelectorAll("[data-map-location]").forEach((control) => {
+        const active = control.dataset.mapLocation === key;
+        control.classList.toggle("is-active", active);
+        if (control.classList.contains("map-hotspot")) {
+          control.setAttribute("aria-pressed", String(active));
         }
-      }, reduceMotion ? 0 : 650);
-    });
-  });
+      });
+    }
 
-  function setupScrollMotion() {
-    const revealSelectors = [
-      ".section-intro",
-      ".situation-card",
-      ".trust-intro > *",
-      ".trust-grid > div",
-      ".sector-explorer",
-      ".map-heading",
-      ".map-viewer",
-      ".map-information",
-      ".capacity-heading > *",
-      ".capacity-card",
-      ".legacy-switch",
-      ".legacy-stage",
-      ".services-image",
-      ".services-copy > *",
-      ".benefit-band > div",
-      ".planning-image",
-      ".planning-copy > *",
-      ".immediate-steps li",
+    document.querySelectorAll("[data-map-location]").forEach((control) => {
+      control.addEventListener("click", () => updateLocation(control.dataset.mapLocation));
+    });
+
+    const tooltip = document.createElement("div");
+    tooltip.className = "map-cursor-tooltip";
+    tooltip.setAttribute("role", "tooltip");
+    tooltip.setAttribute("aria-hidden", "true");
+    const tooltipImage = document.createElement("img");
+    tooltipImage.decoding = "async";
+    tooltipImage.hidden = true;
+    const tooltipLabel = document.createElement("span");
+    tooltip.append(tooltipImage, tooltipLabel);
+    document.body.appendChild(tooltip);
+
+    function positionTooltip(clientX, clientY) {
+      const gap = 14;
+      const edge = 8;
+      const width = tooltip.offsetWidth;
+      const height = tooltip.offsetHeight;
+      let left = clientX + gap;
+      let top = clientY + gap;
+
+      if (left + width > window.innerWidth - edge) {
+        left = clientX - width - gap;
+        tooltip.style.transformOrigin = "right center";
+      } else {
+        tooltip.style.transformOrigin = "left center";
+      }
+      if (top + height > window.innerHeight - edge) {
+        top = clientY - height - gap;
+      }
+
+      tooltip.style.left = Math.max(edge, left) + "px";
+      tooltip.style.top = Math.max(edge, top) + "px";
+    }
+
+    function showTooltip(control, clientX, clientY) {
+      const location = mapData[control.dataset.mapLocation];
+      if (!location) return;
+      tooltipLabel.textContent = location.title;
+
+      if (location.image) {
+        tooltipImage.src = location.image;
+        tooltipImage.alt = location.imageAlt;
+        tooltipImage.hidden = false;
+      } else {
+        tooltipImage.hidden = true;
+        tooltipImage.removeAttribute("src");
+        tooltipImage.alt = "";
+      }
+
+      tooltip.setAttribute("aria-hidden", "false");
+      tooltip.classList.add("is-visible");
+      positionTooltip(clientX, clientY);
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove("is-visible");
+      tooltip.setAttribute("aria-hidden", "true");
+    }
+
+    document.querySelectorAll(".map-hotspot").forEach((hotspot) => {
+      hotspot.addEventListener("pointerenter", (event) => {
+        if (event.pointerType !== "touch") showTooltip(hotspot, event.clientX, event.clientY);
+      });
+      hotspot.addEventListener("pointermove", (event) => {
+        if (tooltip.classList.contains("is-visible")) positionTooltip(event.clientX, event.clientY);
+      });
+      hotspot.addEventListener("pointerleave", hideTooltip);
+      hotspot.addEventListener("blur", hideTooltip);
+      hotspot.addEventListener("focus", () => {
+        const rect = hotspot.getBoundingClientRect();
+        showTooltip(hotspot, rect.right, rect.top + rect.height / 2);
+      });
+    });
+
+    function applyZoom(nextIndex) {
+      zoomIndex = Math.max(0, Math.min(zoomLevels.length - 1, nextIndex));
+      canvas.style.width = (zoomLevels[zoomIndex] * 100) + "%";
+      const zoomOut = document.querySelector("[data-map-action='zoom-out']");
+      const zoomIn = document.querySelector("[data-map-action='zoom-in']");
+      if (zoomOut) zoomOut.disabled = zoomIndex === 0;
+      if (zoomIn) zoomIn.disabled = zoomIndex === zoomLevels.length - 1;
+      if (zoomIndex === 0) {
+        scroll.scrollTo({ top: 0, left: 0, behavior: reduceMotion ? "auto" : "smooth" });
+      }
+    }
+
+    document.querySelectorAll("[data-map-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.dataset.mapAction === "zoom-in") applyZoom(zoomIndex + 1);
+        if (button.dataset.mapAction === "zoom-out") applyZoom(zoomIndex - 1);
+        if (button.dataset.mapAction === "reset") applyZoom(0);
+      });
+    });
+
+    scroll.addEventListener("pointerdown", (event) => {
+      if (event.target.closest("button") || zoomIndex === 0) return;
+      drag = {
+        x: event.clientX,
+        y: event.clientY,
+        left: scroll.scrollLeft,
+        top: scroll.scrollTop
+      };
+      scroll.setPointerCapture(event.pointerId);
+    });
+    scroll.addEventListener("pointermove", (event) => {
+      if (!drag) return;
+      scroll.scrollLeft = drag.left - (event.clientX - drag.x);
+      scroll.scrollTop = drag.top - (event.clientY - drag.y);
+    });
+    scroll.addEventListener("pointerup", () => { drag = null; });
+    scroll.addEventListener("pointercancel", () => { drag = null; });
+    canvas.addEventListener("dblclick", () => applyZoom(zoomIndex + 1));
+    applyZoom(0);
+  }
+
+  function setupMotion() {
+    const selectors = [
       ".contact-copy > *",
       ".full-form",
+      ".trust-intro > *",
+      ".trust-grid > div",
+      ".agreements-copy > *",
+      ".agreements-panel",
+      ".capacity-heading > *",
+      ".capacity-card",
+      ".immediate-steps li",
+      ".sector-heading > *",
+      ".sector-explorer",
+      ".planning-image",
+      ".planning-copy > *",
+      ".map-heading > *",
+      ".map-viewer",
+      ".map-information",
       ".faq-list details",
       ".closing-cta > *"
     ];
+    const targets = document.querySelectorAll(selectors.join(","));
 
-    const revealTargets = document.querySelectorAll(revealSelectors.join(","));
-    revealTargets.forEach((element, index) => {
+    targets.forEach((element, index) => {
       element.classList.add("reveal-target");
-      element.style.setProperty("--reveal-delay", (index % 4) * 65 + "ms");
+      element.style.setProperty("--reveal-delay", (index % 4) * 55 + "ms");
     });
 
-    document.querySelector(".services-image")?.classList.add("reveal-from-left");
-    document.querySelectorAll(".services-copy > *").forEach((element) => element.classList.add("reveal-from-right"));
-    document.querySelector(".planning-image")?.classList.add("reveal-from-right");
-
     if (reduceMotion || !("IntersectionObserver" in window)) {
-      revealTargets.forEach((element) => element.classList.add("is-visible"));
+      targets.forEach((element) => element.classList.add("is-visible"));
       return;
     }
 
@@ -562,64 +598,79 @@
         entry.target.classList.add("is-visible");
         observer.unobserve(entry.target);
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -7% 0px" });
+    }, { threshold: 0.1, rootMargin: "0px 0px -6% 0px" });
 
-    revealTargets.forEach((element) => observer.observe(element));
+    targets.forEach((element) => observer.observe(element));
   }
 
-  const header = document.querySelector(".site-header");
-  const planningImage = document.querySelector(".planning-photo");
-  let scrollFrame = 0;
+  function setupScrollEffects() {
+    const header = document.querySelector(".site-header");
+    const planningImage = document.querySelector(".planning-photo");
+    let frame = 0;
 
-  function updateScrollEffects() {
-    scrollFrame = 0;
-    header?.classList.toggle("is-scrolled", window.scrollY > 36);
+    function update() {
+      frame = 0;
+      header?.classList.toggle("is-scrolled", window.scrollY > 36);
 
-    if (!reduceMotion && planningImage) {
-      const rect = planningImage.parentElement.getBoundingClientRect();
-      const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-      const offset = Math.max(-18, Math.min(18, (progress - 0.5) * 36));
-      planningImage.style.setProperty("--parallax-y", offset.toFixed(1) + "px");
-    }
-  }
-
-  window.addEventListener("scroll", () => {
-    if (scrollFrame) return;
-    scrollFrame = window.requestAnimationFrame(updateScrollEffects);
-  }, { passive: true });
-
-  document.querySelectorAll(".faq-list details").forEach((details) => {
-    const summary = details.querySelector("summary");
-    if (!summary || reduceMotion) return;
-
-    summary.addEventListener("click", (event) => {
-      event.preventDefault();
-      if (details.dataset.animating === "true") return;
-
-      details.dataset.animating = "true";
-      const startHeight = details.offsetHeight;
-
-      if (!details.open) {
-        details.open = true;
-        const endHeight = details.offsetHeight;
-        details.animate(
-          [{ height: startHeight + "px" }, { height: endHeight + "px" }],
-          { duration: 300, easing: "cubic-bezier(0.2, 0.72, 0.2, 1)" }
-        ).onfinish = () => {
-          details.dataset.animating = "false";
-        };
-      } else {
-        const endHeight = summary.offsetHeight;
-        details.animate(
-          [{ height: startHeight + "px" }, { height: endHeight + "px" }],
-          { duration: 260, easing: "cubic-bezier(0.4, 0, 0.2, 1)" }
-        ).onfinish = () => {
-          details.open = false;
-          details.dataset.animating = "false";
-        };
+      if (!reduceMotion && planningImage) {
+        const rect = planningImage.parentElement.getBoundingClientRect();
+        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+        const offset = Math.max(-18, Math.min(18, (progress - 0.5) * 36));
+        planningImage.style.setProperty("--parallax-y", offset.toFixed(1) + "px");
       }
-    });
-  });
+    }
 
-  setupScrollMotion();
-  updateScrollEffects();})();
+    window.addEventListener("scroll", () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    }, { passive: true });
+    update();
+  }
+
+  function setupFaq() {
+    document.querySelectorAll(".faq-list details").forEach((details) => {
+      const summary = details.querySelector("summary");
+      if (!summary || reduceMotion) return;
+
+      summary.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (details.dataset.animating === "true") return;
+
+        details.dataset.animating = "true";
+        const startHeight = details.offsetHeight;
+
+        if (!details.open) {
+          details.open = true;
+          const endHeight = details.offsetHeight;
+          details.animate(
+            [{ height: startHeight + "px" }, { height: endHeight + "px" }],
+            { duration: 280, easing: "cubic-bezier(0.2, 0.72, 0.2, 1)" }
+          ).onfinish = () => {
+            details.dataset.animating = "false";
+          };
+        } else {
+          const endHeight = summary.offsetHeight;
+          details.animate(
+            [{ height: startHeight + "px" }, { height: endHeight + "px" }],
+            { duration: 240, easing: "cubic-bezier(0.4, 0, 0.2, 1)" }
+          ).onfinish = () => {
+            details.open = false;
+            details.dataset.animating = "false";
+          };
+        }
+      });
+    });
+  }
+
+  initializeAnalytics();
+  applyCommercialConfig();
+  setupTicker();
+  setupLeadIntent();
+  setupForm();
+  setupSectorGallery();
+  setupMap();
+  setupMotion();
+  setupScrollEffects();
+  setupFaq();
+  trackEvent("page_view", { page_path: window.location.pathname });
+})();
