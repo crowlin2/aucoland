@@ -62,7 +62,7 @@
             <p class="hero-secondary" data-copy="heroSecondary">Recibe orientación personalizada y compara ubicaciones antes de decidir.</p>
             <div class="hero-actions">
               <a class="button button-primary" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita al parque</a>
-              <a class="button button-light" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta>Cotizar por WhatsApp</a>
+              <a class="button button-light" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="hero"><span data-button-label>Cotizar por WhatsApp</span></a>
             </div>
             <ul class="hero-facts" aria-label="Condiciones comerciales principales">
               <li><strong data-config-value="price">Valor inicial</strong><span>Sepulturas perpetuas</span></li>
@@ -122,7 +122,10 @@
           <input type="hidden" name="page_url">
           <input type="hidden" name="referrer">
           <input type="hidden" name="submitted_at">
-          <button class="button button-primary button-full" type="submit">Continuar en WhatsApp</button>
+          <input type="hidden" name="agent_id">
+          <input type="hidden" name="agent_name">
+          <input type="hidden" name="lead_id">
+          <button class="button button-primary button-full" type="submit"><span data-button-label>Continuar en WhatsApp</span></button>
           <p class="form-note">Tus datos serán utilizados para responder esta solicitud.</p>
           <p class="form-status" role="status" aria-live="polite"></p>
         </form>
@@ -325,9 +328,11 @@
       </section>
     </main>
 
-    <a class="sticky-whatsapp" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta aria-label="Continuar la cotización por WhatsApp">
+    <p class="whatsapp-global-status" data-whatsapp-status role="status" aria-live="polite"></p>
+
+    <a class="sticky-whatsapp" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="floating" aria-label="Hablar con un asesor por WhatsApp">
       <img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true">
-      <span>Cotizar por WhatsApp</span>
+      <span data-button-label>Cotizar por WhatsApp</span>
     </a>
 
     <footer class="site-footer">
