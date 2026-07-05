@@ -68,7 +68,6 @@ La función central `trackEvent` funciona aunque GA o Meta Pixel no estén insta
 La configuración opcional existente sigue usando:
 
 - `VITE_GA_MEASUREMENT_ID`
-- `VITE_GTM_ID`
 - `VITE_META_PIXEL_ID`
 
 Estos identificadores analíticos sí son públicos por naturaleza. Los números de WhatsApp no forman parte de esa configuración.

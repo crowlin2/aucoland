@@ -104,16 +104,10 @@
   }
 
   function initializeAnalytics() {
-    const gtmId = String(analyticsConfig.gtmId || "").trim();
     const gaId = String(analyticsConfig.gaMeasurementId || "").trim();
     const metaId = String(analyticsConfig.metaPixelId || "").trim();
 
     window.dataLayer = window.dataLayer || [];
-
-    if (gtmId && !document.querySelector('script[src*="googletagmanager.com/gtm.js?id="]')) {
-      window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
-      injectScript("https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(gtmId), "auco-gtm");
-    }
 
     if (gaId) {
       injectScript("https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(gaId), "auco-ga");
@@ -164,10 +158,17 @@
 
     completedLeadEvents.add(leadId);
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "lead_form_success",
-      lead_id: leadId
-    });
+
+    if (typeof gtag === "function") {
+      gtag("event", "lead_form_success", {
+        lead_id: leadId
+      });
+    } else {
+      window.dataLayer.push({
+        event: "lead_form_success",
+        lead_id: leadId
+      });
+    }
   }
 
   function applyCommercialConfig() {
