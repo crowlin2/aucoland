@@ -236,9 +236,19 @@
   function setupLeadIntent() {
     const form = document.querySelector("#lead-form");
     const objective = form && form.elements.objetivo;
+    const status = form && form.querySelector(".form-status");
+
+    function goToForm() {
+      if (!form) return;
+      form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      const firstInvalid = form.querySelector(":invalid");
+      window.setTimeout(() => {
+        if (firstInvalid && typeof firstInvalid.focus === "function") firstInvalid.focus();
+      }, reduceMotion ? 0 : 450);
+    }
 
     document.querySelectorAll("[data-objective]").forEach((control) => {
-      control.addEventListener("click", () => {
+      control.addEventListener("click", (event) => {
         if (objective && control.dataset.objective) {
           objective.value = control.dataset.objective;
         }
@@ -248,6 +258,24 @@
             placement: control.closest("section")?.id || "header"
           });
         }
+
+        if (!control.hasAttribute("data-whatsapp-cta") || !form) return;
+
+        event.preventDefault();
+        if (form.checkValidity()) {
+          if (status) status.textContent = "Registraremos tu solicitud antes de abrir WhatsApp.";
+          if (typeof form.requestSubmit === "function") {
+            form.requestSubmit();
+          } else {
+            form.querySelector('button[type="submit"]')?.click();
+          }
+          return;
+        }
+
+        if (status) {
+          status.textContent = "Completa los campos obligatorios para continuar por WhatsApp.";
+        }
+        goToForm();
       });
     });
 
