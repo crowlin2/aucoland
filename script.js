@@ -30,46 +30,46 @@
   const sectorData = {
     roble: {
       tag: "Sector Roble",
-      name: "Sombra, amplitud y ÃƒÂ¡rboles maduros",
+      name: "Sombra, amplitud y árboles maduros",
       description: "Alternativas familiares de 4 y 8 capacidades.",
       image: "assets/fotos/sector-roble.webp",
-      alt: "Sector Roble con pradera, ÃƒÂ¡rboles maduros y una banca"
+      alt: "Sector Roble con pradera, árboles maduros y una banca"
     },
     maiten: {
-      tag: "Sector MaitÃƒÂ©n",
+      tag: "Sector Maitén",
       name: "Un entorno abierto y luminoso",
       description: "Alternativas familiares de 4 y 6 capacidades.",
       image: "assets/fotos/banca-parque-auco.webp",
-      alt: "Sector MaitÃƒÂ©n con pradera abierta, ÃƒÂ¡rboles y cordillera"
+      alt: "Sector Maitén con pradera abierta, árboles y cordillera"
     },
     quillay: {
       tag: "Sector Quillay",
       name: "Naturaleza y vistas a la cordillera",
       description: "Alternativas familiares de 2 y 4 capacidades.",
       image: "assets/fotos/panoramica-parque-auco.webp",
-      alt: "ÃƒÂreas verdes del parque con vistas a la cordillera"
+      alt: "Áreas verdes del parque con vistas a la cordillera"
     },
     peumo: {
       tag: "Sector Peumo",
-      name: "Un paisaje familiar entre ÃƒÂ¡rboles",
+      name: "Un paisaje familiar entre árboles",
       description: "Alternativas familiares de 4 capacidades.",
       image: "assets/fotos/pradera-parque-auco.webp",
-      alt: "Senderos y vegetaciÃƒÂ³n del parque en Sector Peumo"
+      alt: "Senderos y vegetación del parque en Sector Peumo"
     }
   };
 
   const mapData = {
     atencion: {
-      tag: "Punto de atenciÃƒÂ³n",
-      title: "AtenciÃƒÂ³n Comercial",
-      description: "Punto de orientaciÃƒÂ³n y coordinaciÃƒÂ³n de visitas.",
+      tag: "Punto de atención",
+      title: "Atención Comercial",
+      description: "Punto de orientación y coordinación de visitas.",
       image: "assets/fotos/instalaciones-aereas-auco.webp",
-      imageAlt: "Vista aÃƒÂ©rea de las instalaciones de Parque de Auco"
+      imageAlt: "Vista aérea de las instalaciones de Parque de Auco"
     },
     capilla: {
       tag: "Punto del parque",
       title: "Capilla",
-      description: "UbicaciÃƒÂ³n de la capilla dentro del parque.",
+      description: "Ubicación de la capilla dentro del parque.",
       image: "assets/fotos/capilla-auco-mejorada.webp",
       imageAlt: "Exterior de la Capilla de Parque de Auco"
     },
@@ -82,8 +82,8 @@
     },
     anforas: {
       tag: "Punto del parque",
-      title: "Sector ÃƒÂnforas",
-      description: "ÃƒÂrea identificada en el plano del parque."
+      title: "Sector Ánforas",
+      description: "Área identificada en el plano del parque."
     },
     nichos: {
       tag: "Punto del parque",
@@ -93,7 +93,7 @@
     plaza: {
       tag: "Punto de referencia",
       title: "Plaza de la Cruz",
-      description: "Punto central cercano al acceso y AtenciÃƒÂ³n Comercial."
+      description: "Punto central cercano al acceso y Atención Comercial."
     }
   };
 
@@ -392,7 +392,7 @@
       toggle.setAttribute("aria-pressed", String(paused));
       toggle.setAttribute("aria-label", paused ? "Reanudar cinta" : "Pausar cinta");
       toggle.title = paused ? "Reanudar movimiento" : "Pausar movimiento";
-      toggle.querySelector("span").textContent = paused ? "Ã¢â€“Â¶" : "Ã¢â€¦Â¡";
+      toggle.querySelector("span").textContent = paused ? "▶" : "Ⅱ";
     });
   }
 
@@ -497,9 +497,9 @@
 
   function buildGenericWhatsappMessage(assignment) {
     return [
-      "Hola, vengo desde aucofamilia.com y quiero recibir informaciÃƒÂ³n sobre sepulturas en Parque de Auco.",
+      "Hola, vengo desde aucofamilia.com y quiero recibir información sobre sepulturas en Parque de Auco.",
       "",
-      "CÃƒÂ³digo de solicitud: " + assignment.leadId,
+      "Código de solicitud: " + assignment.leadId,
       "Asesor asignado: " + assignment.agentName,
       "Origen: aucofamilia.com"
     ].join("\n");
