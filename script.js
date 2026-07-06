@@ -24,7 +24,7 @@
   const ASSIGNMENT_TIMEOUT_MS = 8000;
   const THANK_YOU_STORAGE_KEY = "aucoThankYouState";
   const THANK_YOU_MAX_AGE_MS = 10 * 60 * 1000;
-  const THANK_YOU_CONVERSION_SEND_TO = "AW-18301399998/JF83CJLfscscEL7n5JZE";
+  const THANK_YOU_CONVERSION_SEND_TO = "AW-18301399998/s9w3CI_f9MscEL7n5JZE";
   let assignmentInFlight = false;
 
   const sectorData = {
@@ -290,7 +290,7 @@
     if (!/^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(state.leadId || ""))) return false;
     if (!/^https:\/\/wa\.me\/\d{11,15}\?text=/.test(String(state.whatsappUrl || ""))) return false;
     if (typeof state.asesorAsignado !== "string" || !state.asesorAsignado.trim()) return false;
-    if (state.conversionPending !== true) return false;
+    if (state.conversionReported !== true) return false;
     const submittedAt = Date.parse(String(state.submittedAt || ""));
     if (!Number.isFinite(submittedAt)) return false;
     const age = Date.now() - submittedAt;
@@ -310,6 +310,8 @@
     if (typeof window.gtag === "function") {
       window.gtag("event", "conversion", {
         send_to: THANK_YOU_CONVERSION_SEND_TO,
+        value: 1.0,
+        currency: "CLP",
         event_callback: callback
       });
       window.setTimeout(callback, 1800);
@@ -719,16 +721,22 @@
           lead_id: assignment.leadId
         });
 
-        saveThankYouState({
-          leadId: assignment.leadId,
-          whatsappUrl,
-          agentId: assignment.agentId,
-          asesorAsignado: assignment.agentName,
-          submittedAt,
-          conversionPending: true
-        });
+        let conversionContinuationStarted = false;
+        const continueToThankYou = () => {
+          if (conversionContinuationStarted) return;
+          conversionContinuationStarted = true;
+          saveThankYouState({
+            leadId: assignment.leadId,
+            whatsappUrl,
+            agentId: assignment.agentId,
+            asesorAsignado: assignment.agentName,
+            submittedAt,
+            conversionReported: true
+          });
+          window.location.assign("/gracias");
+        };
 
-        window.location.assign("/gracias");
+        reportGoogleAdsConversion(assignment.leadId, continueToThankYou);
       } catch (error) {
         if (String(error && error.message) === "netlify_submit_failed") {
           status.textContent = "No pudimos enviar tu solicitud. Revisa tu conexi\u00f3n e int\u00e9ntalo nuevamente.";
@@ -798,7 +806,7 @@
     }
 
     if (status) status.textContent = "Abriendo WhatsApp...";
-    reportGoogleAdsConversion(thankYouState.leadId, openWhatsAppOnce);
+    window.setTimeout(openWhatsAppOnce, 500);
   }
 
   function setupSectorGallery() {
