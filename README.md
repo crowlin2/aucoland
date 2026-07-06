@@ -8,7 +8,7 @@ Los cambios se desarrollan en la rama `dev` y se revisan mediante Pull Request a
 
 ## Formulario y leads
 
-El formulario `auco-leads` usa Netlify Forms. Guarda:
+El formulario `leads-parque-auco` usa Netlify Forms. Guarda:
 
 - nombre
 - teléfono o WhatsApp
@@ -18,8 +18,13 @@ El formulario `auco-leads` usa Netlify Forms. Guarda:
 - UTM, `fbclid` y `gclid`
 - URL, referrer y fecha de envío
 
-Los leads se revisan en **Netlify > Forms > auco-leads**.
+Los leads se revisan en **Netlify > Forms > leads-parque-auco**.
 
+## Flujo de confirmación
+
+Tras validar el formulario, el sitio normaliza el teléfono chileno, solicita una única asignación de asesor y envía los datos mediante POST codificado a Netlify Forms. Solo cuando Netlify responde correctamente guarda la continuación en `sessionStorage` y redirige a `/gracias`.
+
+La página `/gracias` valida que la solicitud tenga menos de 10 minutos, registra una sola conversión de Google Ads por `lead_id` y abre el WhatsApp del mismo asesor. Si la apertura automática no funciona, mantiene visible el botón **Continuar a WhatsApp**.
 ## Repartición de WhatsApp
 
 La Function `netlify/functions/asignar-lead.js` distribuye solicitudes en orden alternado:
