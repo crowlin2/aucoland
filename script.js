@@ -767,13 +767,12 @@
 
     const autoOpenKey = "whatsappAutoOpened:" + thankYouState.leadId;
     let whatsappOpened = false;
+    const isMobileDevice =
+      Boolean(navigator.userAgentData && navigator.userAgentData.mobile) ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      window.matchMedia("(pointer: coarse)").matches;
 
-    const openWhatsAppOnce = (event) => {
-      if (event) event.preventDefault();
-      if (whatsappOpened) return;
-
-      whatsappOpened = true;
-      sessionStorage.setItem(autoOpenKey, "true");
+    const trackThankYouWhatsappOpen = () => {
       trackEvent("whatsapp_opened", {
         agent_id: thankYouState.agentId || "",
         agent_name: thankYouState.asesorAsignado,
@@ -781,14 +780,58 @@
         contact_source: "thank_you_page",
         form_type: "lead_form"
       });
+    };
+
+    const openWhatsAppOnce = (event) => {
+      const isManualDesktopOpen = Boolean(event) && !isMobileDevice;
+      if (event && !isManualDesktopOpen) event.preventDefault();
+      if (whatsappOpened) return;
+
+      whatsappOpened = true;
+      sessionStorage.setItem(autoOpenKey, "true");
+
+      if (isManualDesktopOpen) {
+        trackThankYouWhatsappOpen();
+        if (status) status.textContent = "WhatsApp se abri\u00f3 en una nueva pesta\u00f1a.";
+        window.setTimeout(() => {
+          whatsappOpened = false;
+        }, 2500);
+        return;
+      }
+
+      if (isMobileDevice) {
+        trackThankYouWhatsappOpen();
+        window.location.assign(thankYouState.whatsappUrl);
+        return;
+      }
+
+      const whatsappWindow = window.open(
+        thankYouState.whatsappUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      if (!whatsappWindow) {
+        whatsappOpened = false;
+        if (status) {
+          status.textContent = "Tu navegador bloque\u00f3 la nueva pesta\u00f1a. Usa el bot\u00f3n para continuar a WhatsApp.";
+        }
+        return;
+      }
+
+      trackThankYouWhatsappOpen();
       window.setTimeout(() => {
         whatsappOpened = false;
       }, 2500);
-      window.location.replace(thankYouState.whatsappUrl);
+      if (status) status.textContent = "WhatsApp se abri\u00f3 en una nueva pesta\u00f1a.";
     };
 
     if (whatsappButton) {
       whatsappButton.setAttribute("href", thankYouState.whatsappUrl);
+      if (!isMobileDevice) {
+        whatsappButton.setAttribute("target", "_blank");
+        whatsappButton.setAttribute("rel", "noopener noreferrer");
+      }
       whatsappButton.addEventListener("click", openWhatsAppOnce);
     }
 
