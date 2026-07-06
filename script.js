@@ -772,7 +772,7 @@
     }
 
     if (status) status.textContent = "Abriendo WhatsApp...";
-    window.setTimeout(openWhatsAppOnce, 500);
+    window.setTimeout(openWhatsAppOnce, 1800);
   }
 
   function setupSectorGallery() {
