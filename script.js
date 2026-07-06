@@ -24,7 +24,6 @@
   const ASSIGNMENT_TIMEOUT_MS = 8000;
   const THANK_YOU_STORAGE_KEY = "aucoThankYouState";
   const THANK_YOU_MAX_AGE_MS = 10 * 60 * 1000;
-  const THANK_YOU_CONVERSION_SEND_TO = "AW-18301399998/s9w3CI_f9MscEL7n5JZE";
   let assignmentInFlight = false;
 
   const sectorData = {
@@ -142,10 +141,6 @@
     const safeParameters = parameters || {};
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(Object.assign({ event: name }, safeParameters));
-
-    if (typeof window.gtag === "function") {
-      window.gtag("event", name, safeParameters);
-    }
 
     if (typeof window.fbq === "function") {
       if (name === "page_view") {
@@ -290,36 +285,13 @@
     if (!/^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(state.leadId || ""))) return false;
     if (!/^https:\/\/wa\.me\/\d{11,15}\?text=/.test(String(state.whatsappUrl || ""))) return false;
     if (typeof state.asesorAsignado !== "string" || !state.asesorAsignado.trim()) return false;
-    if (state.conversionReported !== true) return false;
+    if (state.submissionConfirmed !== true) return false;
     const submittedAt = Date.parse(String(state.submittedAt || ""));
     if (!Number.isFinite(submittedAt)) return false;
     const age = Date.now() - submittedAt;
     return age >= 0 && age <= THANK_YOU_MAX_AGE_MS;
   }
 
-  function reportGoogleAdsConversion(leadId, callback) {
-    const conversionKey = "googleAdsConversionReported:" + leadId;
-    if (sessionStorage.getItem(conversionKey) === "true") {
-      callback();
-      return;
-    }
-
-    sessionStorage.setItem(conversionKey, "true");
-    window.dataLayer = window.dataLayer || [];
-
-    if (typeof window.gtag === "function") {
-      window.gtag("event", "conversion", {
-        send_to: THANK_YOU_CONVERSION_SEND_TO,
-        value: 1.0,
-        currency: "CLP",
-        event_callback: callback
-      });
-      window.setTimeout(callback, 1800);
-      return;
-    }
-
-    window.setTimeout(callback, 800);
-  }
 
   function applyCommercialConfig() {
     const labels = {
@@ -721,22 +693,16 @@
           lead_id: assignment.leadId
         });
 
-        let conversionContinuationStarted = false;
-        const continueToThankYou = () => {
-          if (conversionContinuationStarted) return;
-          conversionContinuationStarted = true;
-          saveThankYouState({
-            leadId: assignment.leadId,
-            whatsappUrl,
-            agentId: assignment.agentId,
-            asesorAsignado: assignment.agentName,
-            submittedAt,
-            conversionReported: true
-          });
-          window.location.assign("/gracias");
-        };
+        saveThankYouState({
+          leadId: assignment.leadId,
+          whatsappUrl,
+          agentId: assignment.agentId,
+          asesorAsignado: assignment.agentName,
+          submittedAt,
+          submissionConfirmed: true
+        });
 
-        reportGoogleAdsConversion(assignment.leadId, continueToThankYou);
+        window.location.assign("/gracias");
       } catch (error) {
         if (String(error && error.message) === "netlify_submit_failed") {
           status.textContent = "No pudimos enviar tu solicitud. Revisa tu conexi\u00f3n e int\u00e9ntalo nuevamente.";
