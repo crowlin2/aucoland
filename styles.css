@@ -90,10 +90,19 @@ h3 { font-family: var(--font-sans); font-weight: 500; line-height: 1.28; }
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+  box-shadow: 0 7px 18px rgba(16, 47, 41, 0.1);
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
-.button:hover { transform: translateY(-2px); }
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(16, 47, 41, 0.16);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 12px rgba(16, 47, 41, 0.13);
+}
 
 .button-primary {
   border-color: var(--green-900);
@@ -1992,31 +2001,42 @@ textarea { resize: vertical; }
   display: inline-flex;
   margin-top: 1rem;
   text-decoration: none;
+}
 
-.thanks-card .button-whatsapp {
+.whatsapp-action {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.7rem;
+  gap: 0.65rem;
+  min-height: 3.55rem;
+  padding: 0.48rem 1.1rem 0.48rem 0.55rem;
+  border-color: rgba(16, 47, 41, 0.22);
+  box-shadow: 0 10px 24px rgba(16, 47, 41, 0.2);
 }
 
-.thanks-card .button-whatsapp img {
-  width: 1.2rem;
-  height: 1.2rem;
+.whatsapp-action img {
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 2.35rem;
+  padding: 0.38rem;
+  border: 1px solid rgba(16, 47, 41, 0.08);
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 4px 10px rgba(16, 47, 41, 0.16);
   object-fit: contain;
 }
+
+.whatsapp-action span {
+  line-height: 1.2;
 }
 
-.form-submit-whatsapp {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.7rem;
+.whatsapp-action:hover {
+  border-color: rgba(16, 47, 41, 0.34);
+  box-shadow: 0 14px 30px rgba(16, 47, 41, 0.24);
 }
 
-.form-submit-whatsapp img {
-  width: 1.1rem;
-  height: 1.1rem;
-  object-fit: contain;
+.whatsapp-action.is-loading img {
+  opacity: 0;
 }
 
