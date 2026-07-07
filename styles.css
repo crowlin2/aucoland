@@ -2040,30 +2040,6 @@ textarea { resize: vertical; }
   opacity: 0;
 }
 
-.privacy-consent {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 0.7rem;
-  padding: 0.85rem;
-  border: 1px solid rgba(16,47,41,0.12);
-  border-radius: var(--radius);
-  background: rgba(255,255,255,0.72);
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-
-.privacy-consent input[type="checkbox"] {
-  width: 1.05rem;
-  min-width: 1.05rem;
-  height: 1.05rem;
-  min-height: 1.05rem;
-  margin: 0.15rem 0 0;
-  accent-color: var(--green-700);
-}
-
-.privacy-consent a,
 .form-note a,
 .footer-links a {
   color: var(--green-900);
@@ -2071,10 +2047,6 @@ textarea { resize: vertical; }
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
-}
-
-.privacy-consent .field-error {
-  grid-column: 2;
 }
 
 .footer-links {
@@ -2164,7 +2136,4 @@ textarea { resize: vertical; }
     padding: 1rem;
   }
 
-  .privacy-consent {
-    font-size: 0.76rem;
-  }
 }
