@@ -741,7 +741,7 @@
       return;
     }
 
-    const autoOpenKey = "whatsappAutoOpened:" + thankYouState.leadId;
+    const manualOpenKey = "whatsappManualOpened:" + thankYouState.leadId;
     let whatsappOpened = false;
 
     const openWhatsAppOnce = (event) => {
@@ -749,7 +749,7 @@
       if (whatsappOpened) return;
 
       whatsappOpened = true;
-      sessionStorage.setItem(autoOpenKey, "true");
+      sessionStorage.setItem(manualOpenKey, "true");
       trackEvent("whatsapp_opened", {
         agent_id: thankYouState.agentId || "",
         agent_name: thankYouState.asesorAsignado,
@@ -768,13 +768,12 @@
       whatsappButton.addEventListener("click", openWhatsAppOnce);
     }
 
-    if (sessionStorage.getItem(autoOpenKey) === "true") {
-      if (status) status.textContent = "Si WhatsApp no se abri\u00f3 autom\u00e1ticamente, puedes continuar manualmente.";
+    if (sessionStorage.getItem(manualOpenKey) === "true") {
+      if (status) status.textContent = "Ya abrimos WhatsApp para esta solicitud. Puedes volver a presionar el bot\u00f3n si lo necesitas.";
       return;
     }
 
-    if (status) status.textContent = "Abriendo WhatsApp...";
-    window.setTimeout(openWhatsAppOnce, 1800);
+    if (status) status.textContent = "Presiona el bot\u00f3n para enviar tu solicitud al asesor asignado.";
   }
 
   function setupSectorGallery() {
@@ -1080,5 +1079,6 @@
   setupFaq();
   trackEvent("page_view", { page_path: window.location.pathname });
 })();
+
 
 
