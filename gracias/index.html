@@ -37,12 +37,36 @@
           var isRecent = Number.isFinite(submittedAt) && Date.now() - submittedAt >= 0 && Date.now() - submittedAt <= maxAge;
           var isValidLead = /^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(leadId || ""));
           var conversionKey = "googleAdsPageLoadConversion:" + leadId;
+          var metaLeadKey = "metaLeadConversion:" + leadId;
+          var dataLayerKey = "dataLayerLeadConversion:" + leadId;
 
           if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(conversionKey) !== "true") {
             sessionStorage.setItem(conversionKey, "true");
             window.dataLayer = window.dataLayer || [];
             window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
             window.gtag("event", "conversion", { send_to: sendTo });
+          }
+
+          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(dataLayerKey) !== "true") {
+            sessionStorage.setItem(dataLayerKey, "true");
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: "lead_conversion_success",
+              lead_id: leadId,
+              form_name: "leads-parque-auco"
+            });
+          }
+
+          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(metaLeadKey) !== "true") {
+            sessionStorage.setItem(metaLeadKey, "true");
+            if (typeof window.fbq === "function") {
+              window.fbq("track", "Lead", {
+                content_name: "leads-parque-auco",
+                status: "submitted"
+              }, {
+                eventID: leadId
+              });
+            }
           }
         } catch (error) {
           console.error("Google Ads page-load conversion skipped.", error);
@@ -84,3 +108,4 @@
     <script src="../script.js"></script>
   </body>
 </html>
+
