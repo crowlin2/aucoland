@@ -686,7 +686,7 @@
           throw new Error("netlify_submit_failed");
         }
 
-        trackEvent("form_submit_success", {
+        trackEvent("lead_saved", {
           form_name: "leads-parque-auco",
           objective: payload.objetivo,
           has_agreement: Boolean(payload.convenio),

@@ -8,6 +8,32 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-W69M8GVF');</script>
     <!-- End Google Tag Manager -->
+    <!-- Event snippet for Enviar formulario de clientes potenciales (3) conversion page -->
+    <script>
+      (function () {
+        var storageKey = "aucoThankYouState";
+        var maxAge = 10 * 60 * 1000;
+        var sendTo = "AW-18301399998/5EjcCJWV-sscEL7n5JZE";
+
+        try {
+          var state = JSON.parse(sessionStorage.getItem(storageKey) || "null");
+          var leadId = state && state.leadId;
+          var submittedAt = state && Date.parse(String(state.submittedAt || ""));
+          var isRecent = Number.isFinite(submittedAt) && Date.now() - submittedAt >= 0 && Date.now() - submittedAt <= maxAge;
+          var isValidLead = /^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(leadId || ""));
+          var conversionKey = "googleAdsPageLoadConversion:" + leadId;
+
+          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(conversionKey) !== "true") {
+            sessionStorage.setItem(conversionKey, "true");
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+            window.gtag("event", "conversion", { send_to: sendTo });
+          }
+        } catch (error) {
+          console.error("Google Ads page-load conversion skipped.", error);
+        }
+      })();
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Solicitud recibida | Parque de Auco</title>
