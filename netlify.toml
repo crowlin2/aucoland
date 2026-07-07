@@ -27,3 +27,8 @@
   from = "/gracias"
   to = "/gracias/index.html"
   status = 200
+
+[[redirects]]
+  from = "/politica-de-privacidad"
+  to = "/politica-de-privacidad/index.html"
+  status = 200

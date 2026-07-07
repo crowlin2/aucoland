@@ -37,8 +37,10 @@ await writeFile(
 
 console.log("Sitio estático generado en dist/");
 
-await cp(
-  path.join(projectRoot, "gracias"),
-  path.join(outputDirectory, "gracias"),
-  { recursive: true }
-);
+for (const routeDirectory of ["gracias", "politica-de-privacidad"]) {
+  await cp(
+    path.join(projectRoot, routeDirectory),
+    path.join(outputDirectory, routeDirectory),
+    { recursive: true }
+  );
+}

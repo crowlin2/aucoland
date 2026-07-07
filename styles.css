@@ -2040,3 +2040,131 @@ textarea { resize: vertical; }
   opacity: 0;
 }
 
+.privacy-consent {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(16,47,41,0.12);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.72);
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.privacy-consent input[type="checkbox"] {
+  width: 1.05rem;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  min-height: 1.05rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--green-700);
+}
+
+.privacy-consent a,
+.form-note a,
+.footer-links a {
+  color: var(--green-900);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.privacy-consent .field-error {
+  grid-column: 2;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem 1rem;
+}
+
+.legal-body {
+  background: linear-gradient(180deg, var(--stone-50), var(--stone-100));
+}
+
+.legal-header {
+  position: sticky;
+  top: 0;
+}
+
+.legal-page {
+  width: min(100% - 2rem, 940px);
+  margin: 0 auto;
+  padding: 8.5rem 0 4rem;
+}
+
+.legal-hero {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.legal-hero h1 {
+  margin-bottom: 0.7rem;
+  color: var(--green-950);
+}
+
+.legal-hero p:last-child {
+  margin: 0;
+  color: var(--muted);
+}
+
+.legal-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.legal-content section {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.82);
+  box-shadow: 0 14px 36px rgba(16,47,41,0.06);
+}
+
+.legal-content h2 {
+  margin-bottom: 0.65rem;
+  font-size: 1.35rem;
+  color: var(--green-950);
+}
+
+.legal-content p {
+  margin-bottom: 0.75rem;
+  color: var(--charcoal);
+}
+
+.legal-content p:last-child,
+.legal-content ul:last-child {
+  margin-bottom: 0;
+}
+
+.legal-content ul {
+  margin: 0 0 0.8rem;
+  padding-left: 1.2rem;
+  color: var(--charcoal);
+}
+
+.legal-content li + li {
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 720px) {
+  .legal-page {
+    width: min(100% - 1.25rem, 940px);
+    padding-top: 7.25rem;
+  }
+
+  .legal-content section {
+    padding: 1rem;
+  }
+
+  .privacy-consent {
+    font-size: 0.76rem;
+  }
+}

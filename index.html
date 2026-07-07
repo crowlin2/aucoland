@@ -154,8 +154,13 @@
           <input type="hidden" name="asesor_asignado">
           <input type="hidden" name="whatsapp_asesor">
           <input type="hidden" name="lead_id">
+          <label class="privacy-consent">
+            <input type="checkbox" name="consentimiento_privacidad" value="aceptado" required>
+            <span>He le&iacute;do la <a href="/politica-de-privacidad" target="_blank" rel="noopener">Pol&iacute;tica de Privacidad</a> y autorizo el uso de mis datos para responder mi solicitud y contactarme por tel&eacute;fono o WhatsApp.</span>
+            <span class="field-error" data-field-error-for="consentimiento_privacidad" aria-live="polite"></span>
+          </label>
           <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true"><span data-button-label>Enviar formulario</span></button>
-          <p class="form-note">Tus datos ser&aacute;n utilizados para responder esta solicitud.</p>
+          <p class="form-note">Tus datos ser&aacute;n utilizados para responder esta solicitud. Revisa nuestra <a href="/politica-de-privacidad" target="_blank" rel="noopener">Pol&iacute;tica de Privacidad</a>.</p>
           <p class="form-status" role="status" aria-live="polite"></p>
         </form>
       </section>
@@ -370,7 +375,10 @@
         <span><strong>Parque de Auco</strong><small>Rinconada de Los Andes</small></span>
       </a>
       <p>Sepulturas familiares perpetuas de 2 a 8 capacidades</p>
-      <a href="#inicio">Volver arriba ↑</a>
+      <nav class="footer-links" aria-label="Enlaces del sitio">
+        <a href="/politica-de-privacidad">Pol&iacute;tica de Privacidad</a>
+        <a href="#inicio">Volver arriba &uarr;</a>
+      </nav>
     </footer>
     <script src="analytics-config.js"></script>
     <script src="site-config.js"></script>
