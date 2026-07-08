@@ -2431,3 +2431,40 @@ textarea { resize: vertical; }
     align-items: center;
   }
 }
+@media (max-width: 699px) {
+  body.form-modal-open .contact-section.conversion-form {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .contact-section.conversion-form .contact-copy,
+  .contact-section.conversion-form .form-intro p,
+  .contact-section.conversion-form .form-benefits,
+  .contact-section.conversion-form .form-assurances {
+    display: none;
+  }
+
+  .contact-section.conversion-form .lead-form {
+    max-height: min(88svh, 38rem);
+    padding: 0.85rem;
+    overflow-y: auto;
+  }
+
+  .contact-section.conversion-form .form-intro h3 {
+    font-size: 1.18rem;
+  }
+
+  .contact-section.conversion-form .form-step {
+    gap: 0.7rem;
+  }
+
+  .contact-section.conversion-form .form-grid {
+    gap: 0.55rem;
+  }
+
+  .contact-section.conversion-form .choice-card {
+    min-height: 2.75rem;
+    padding: 0.58rem 0.68rem;
+  }
+}
