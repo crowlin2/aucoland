@@ -639,15 +639,15 @@
   function normalizeObjectiveValue(value) {
     const text = String(value || "").trim();
     const map = {
-      "Agendar visita": "Visita.",
-      "Agendar una visita": "Visita.",
-      "Visita": "Visita.",
-      "Recibir orientaci\u00f3n": "Planificando.",
-      "Cotizar primero": "Necesidad inmediata.",
-      "Ver precios y alternativas": "Planificando.",
-      "Consultar por un convenio": "Planificando.",
-      "Planificando": "Planificando.",
-      "Necesidad inmediata": "Necesidad inmediata."
+      "Agendar visita": "Solo informaci\u00f3n",
+      "Agendar una visita": "Solo informaci\u00f3n",
+      "Visita": "Solo informaci\u00f3n",
+      "Recibir orientaci\u00f3n": "Planificaci\u00f3n futura",
+      "Cotizar primero": "Necesidad inmediata",
+      "Ver precios y alternativas": "Planificaci\u00f3n futura",
+      "Consultar por un convenio": "Planificaci\u00f3n futura",
+      "Planificando": "Planificaci\u00f3n futura",
+      "Necesidad inmediata": "Necesidad inmediata"
     };
     return map[text] || text;
   }
