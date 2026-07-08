@@ -119,7 +119,7 @@
           </figure>
         </div>
 
-        <form class="lead-form full-form lead-form-two-step" id="lead-form" name="leads-parque-auco" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+        <form class="lead-form full-form" id="lead-form" name="leads-parque-auco" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
           <button class="form-modal-close" type="button" data-form-modal-close aria-label="Cerrar formulario">&times;</button>
           <input type="hidden" name="form-name" value="leads-parque-auco">
           <p class="honeypot" hidden><label>No completar este campo<input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
@@ -130,58 +130,31 @@
             <p>Recibe informaci&oacute;n sobre capacidades, precios y opciones de financiamiento directamente por WhatsApp.</p>
           </div>
 
-          <div class="form-benefits" aria-label="Beneficios de la orientaci&oacute;n">
-            <span>Desde 118 UF</span>
-            <span>Pie desde 10%</span>
-            <span>Hasta 72 cuotas</span>
-            <span>Capacidades de 2 a 8 personas</span>
-            <span>Convenios disponibles</span>
-          </div>
 
-          <div class="form-step is-active" data-form-step="1">
-            <div class="form-grid">
-              <label>Nombre
-                <input type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required data-step-one-field>
-                <span class="field-error" data-field-error-for="nombre" aria-live="polite"></span>
-              </label>
-              <label>WhatsApp
-                <span class="phone-input-group">
-                  <span class="phone-prefix" aria-hidden="true">+56</span>
-                  <input type="tel" name="telefono_nacional" autocomplete="tel-national" inputmode="numeric" maxlength="9" pattern="9[0-9]{8}" placeholder="988263485" required data-phone-input data-step-one-field>
-                </span>
-                <span class="field-error" data-field-error-for="telefono_nacional" aria-live="polite"></span>
-              </label>
-              <label>Comuna
-                <input type="text" name="comuna" autocomplete="address-level2" placeholder="Tu comuna" required data-step-one-field>
-                <span class="field-error" data-field-error-for="comuna" aria-live="polite"></span>
-              </label>
-            </div>
-            <button class="button button-primary button-full form-next" type="button" data-form-next><span data-button-label>Ver alternativas disponibles</span></button>
-            <p class="form-note">Sin compromiso de compra. Tus datos ser&aacute;n utilizados &uacute;nicamente para entregarte informaci&oacute;n.</p>
-            <div class="form-assurances" aria-label="Se&ntilde;ales de confianza">
-              <span>Orientaci&oacute;n personalizada</span>
-              <span>Puedes visitar el parque antes de decidir</span>
-              <span>Tus datos no ser&aacute;n compartidos con terceros</span>
-            </div>
-          </div>
-
-          <div class="form-step" data-form-step="2" hidden>
-            <fieldset class="choice-group" data-required-group="objetivo">
-              <legend>&iquest;Qu&eacute; necesitas?</legend>
-              <div class="choice-grid">
-                <label class="choice-card"><input type="radio" name="objetivo" value="Necesidad inmediata." required><span>Necesidad inmediata</span></label>
-                <label class="choice-card"><input type="radio" name="objetivo" value="Planificando."><span>Planificando</span></label>
-                <label class="choice-card"><input type="radio" name="objetivo" value="Visita."><span>Visita</span></label>
-              </div>
+          <div class="form-grid">
+            <label>Nombre
+              <input type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required>
+              <span class="field-error" data-field-error-for="nombre" aria-live="polite"></span>
+            </label>
+            <label>WhatsApp
+              <span class="phone-input-group">
+                <span class="phone-prefix" aria-hidden="true">+56</span>
+                <input type="tel" name="telefono_nacional" autocomplete="tel-national" inputmode="numeric" maxlength="9" pattern="9[0-9]{8}" placeholder="988263485" required data-phone-input>
+              </span>
+              <span class="field-error" data-field-error-for="telefono_nacional" aria-live="polite"></span>
+            </label>
+            <label>Necesidad
+              <select name="objetivo" required>
+                <option value="">Selecciona una opción</option>
+                <option value="Necesidad inmediata.">Necesidad inmediata</option>
+                <option value="Planificando.">Planificando</option>
+                <option value="Visita.">Visita</option>
+              </select>
               <span class="field-error" data-field-error-for="objetivo" aria-live="polite"></span>
-            </fieldset>
-
-            <div class="form-actions split-actions">
-              <button class="button button-light form-back" type="button" data-form-back>Volver</button>
-              <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true"><span data-button-label>Recibir informaci&oacute;n por WhatsApp</span></button>
-            </div>
-            <p class="form-note">Tus datos ser&aacute;n utilizados para responder esta solicitud. Revisa nuestra <a href="/politica-de-privacidad" target="_blank" rel="noopener">Pol&iacute;tica de Privacidad</a>.</p>
+            </label>
           </div>
+          <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true"><span data-button-label>Recibir informaci&oacute;n</span></button>
+          <p class="form-note">Sin compromiso de compra. Tus datos ser&aacute;n utilizados para responder esta solicitud. Revisa nuestra <a href="/politica-de-privacidad" target="_blank" rel="noopener">Pol&iacute;tica de Privacidad</a>.</p>
 
           <input type="hidden" name="telefono_internacional">
           <input type="hidden" name="utm_source">

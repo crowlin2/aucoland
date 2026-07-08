@@ -13,7 +13,6 @@ El formulario `leads-parque-auco` usa Netlify Forms. Guarda:
 - nombre
 - teléfono o WhatsApp
 - objetivo
-- convenio
 - asesor asignado y código de solicitud
 - UTM, `fbclid` y `gclid`
 - URL, referrer y fecha de envío

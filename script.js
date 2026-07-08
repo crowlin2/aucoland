@@ -234,7 +234,6 @@
     }
     if (field.validity.valueMissing) {
       if (field.name === "nombre") return "Ingresa tu nombre.";
-      if (field.name === "comuna") return "Selecciona una comuna.";
       if (field.name === "objetivo") return "Selecciona una alternativa para continuar.";
       return "Este campo es obligatorio.";
     }
@@ -600,25 +599,14 @@
 
   function buildFormWhatsappMessage(payload, assignment) {
     const parts = [
-      "Hola, soy " + cleanSentenceValue(payload.nombre) + ".",
-      "Vivo en " + cleanSentenceValue(payload.comuna) + "."
+      "Hola, soy " + cleanSentenceValue(payload.nombre) + "."
     ];
-
-    if (payload.capacidad) {
-      parts.push("Estoy buscando una alternativa para " + cleanSentenceValue(payload.capacidad).toLowerCase() + ".");
-    }
 
     if (payload.objetivo) {
       parts.push("Me interesa " + cleanSentenceValue(payload.objetivo).toLowerCase() + ".");
     }
 
-    if (payload.plazo) {
-      parts.push("Me gustaria resolverlo " + cleanSentenceValue(payload.plazo).toLowerCase() + ".");
-    }
 
-    if (payload.convenio) {
-      parts.push("Mi convenio es " + cleanSentenceValue(payload.convenio) + ".");
-    }
 
     parts.push("Llegue desde aucofamilia.com.");
     parts.push("");
@@ -830,47 +818,6 @@
 
     populateTrackingFields(form);
 
-    const stepOne = form.querySelector('[data-form-step="1"]');
-    const stepTwo = form.querySelector('[data-form-step="2"]');
-    const nextButton = form.querySelector('[data-form-next]');
-    const backButton = form.querySelector('[data-form-back]');
-
-    const scrollToFormTop = () => {
-      if (document.body.classList.contains("form-modal-open")) {
-        form.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
-        return;
-      }
-      form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    };
-
-    const showFormStep = (stepNumber) => {
-      const isStepOne = stepNumber === 1;
-      if (stepOne) {
-        stepOne.hidden = !isStepOne;
-        stepOne.classList.toggle("is-active", isStepOne);
-      }
-      if (stepTwo) {
-        stepTwo.hidden = isStepOne;
-        stepTwo.classList.toggle("is-active", !isStepOne);
-      }
-      form.dataset.currentStep = String(stepNumber);
-      scrollToFormTop();
-    };
-
-    if (nextButton && stepOne) {
-      nextButton.addEventListener("click", () => {
-        if (!validateFormScope(form, stepOne)) return;
-        trackEvent("form_step_1_complete", {
-          form_name: "leads-parque-auco"
-        });
-        showFormStep(2);
-      });
-    }
-
-    if (backButton) {
-      backButton.addEventListener("click", () => showFormStep(1));
-    }
-
     const phoneField = form.elements.telefono_nacional;
     if (phoneField) {
       const syncPhoneValue = () => {
@@ -909,16 +856,6 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      if (form.dataset.currentStep !== "2") {
-        if (stepOne && validateFormScope(form, stepOne)) {
-          trackEvent("form_step_1_complete", {
-            form_name: "leads-parque-auco"
-          });
-          showFormStep(2);
-        }
-        return;
-      }
-
       if (!validateFormBeforeSubmit(form)) return;
       if (assignmentInFlight) return;
       assignmentInFlight = true;
@@ -935,7 +872,6 @@
       trackEvent("form_submit", {
         form_name: "leads-parque-auco",
         objective: getSelectedFormValue(form, "objetivo"),
-        has_agreement: Boolean(getSelectedFormValue(form, "convenio")),
         utm_source: form.elements.utm_source.value || "",
         utm_campaign: form.elements.utm_campaign.value || ""
       });
@@ -970,7 +906,6 @@
         trackEvent("lead_saved", {
           form_name: "leads-parque-auco",
           objective: payload.objetivo,
-          has_agreement: Boolean(payload.convenio),
           lead_id: assignment.leadId
         });
 
