@@ -70,6 +70,14 @@ La función central `trackEvent` funciona aunque GA o Meta Pixel no estén insta
 - `whatsapp_assignment_error`
 - `whatsapp_opened`
 
+Eventos estandar de Meta Pixel:
+
+- `PageView`: se dispara con el codigo base del Pixel al cargar la pagina.
+- `Lead`: se dispara una sola vez en `/gracias` cuando existe una solicitud confirmada y reciente.
+- `Contact`: se dispara una sola vez por `lead_id` cuando el usuario abre WhatsApp para contactar al asesor.
+
+Los demas eventos del embudo se mantienen como `trackCustom` para diagnostico y audiencias, sin marcarlos como conversion estandar.
+
 La configuración opcional existente sigue usando:
 
 - `VITE_GA_MEASUREMENT_ID`

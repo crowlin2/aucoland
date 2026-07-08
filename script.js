@@ -153,6 +153,35 @@
     }
   }
 
+  function trackMetaStandardEvent(name, parameters, eventId) {
+    if (typeof window.fbq !== "function") return;
+    const safeParameters = parameters || {};
+    if (eventId) {
+      window.fbq("track", name, safeParameters, { eventID: eventId });
+      return;
+    }
+    window.fbq("track", name, safeParameters);
+  }
+
+  function trackMetaContactEvent(assignment, contactSource, formType) {
+    const leadId = assignment && assignment.leadId ? String(assignment.leadId) : "";
+    const storageKey = leadId ? "metaContactEvent:" + leadId : "";
+
+    try {
+      if (storageKey && sessionStorage.getItem(storageKey) === "true") return;
+      if (storageKey) sessionStorage.setItem(storageKey, "true");
+    } catch {
+      // Continue without dedupe if sessionStorage is unavailable.
+    }
+
+    trackMetaStandardEvent("Contact", {
+      content_name: "whatsapp_contact",
+      content_category: "lead_contact",
+      status: "opened",
+      contact_source: contactSource || "",
+      form_type: formType || ""
+    }, leadId ? leadId + "-CONTACT" : "");
+  }
   function normalizeChileanMobile(value) {
     let digits = String(value || "").replace(/\D/g, "");
 
@@ -610,6 +639,7 @@
       contact_source: contactSource,
       form_type: formType
     });
+    trackMetaContactEvent(assignment, contactSource, formType);
 
     if (pendingWindow && !pendingWindow.closed) {
       pendingWindow.location.replace(whatsappUrl);
@@ -1006,6 +1036,7 @@
         contact_source: "thank_you_page",
         form_type: "lead_form"
       });
+      trackMetaContactEvent({ leadId: thankYouState.leadId }, "thank_you_page", "lead_form");
       window.setTimeout(() => {
         whatsappOpened = false;
       }, 2500);
