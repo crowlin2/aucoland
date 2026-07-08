@@ -2432,6 +2432,12 @@ textarea { resize: vertical; }
   }
 }
 @media (max-width: 699px) {
+  .contact-section.conversion-form {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
   body.form-modal-open .contact-section.conversion-form {
     opacity: 1;
     pointer-events: auto;
