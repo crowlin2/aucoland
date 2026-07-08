@@ -182,6 +182,33 @@
       form_type: formType || ""
     }, leadId ? leadId + "-CONTACT" : "");
   }
+
+  function trackMetaLeadEvent(assignment, formName, objective) {
+    if (typeof window.fbq !== "function") return false;
+
+    const leadId = assignment && assignment.leadId ? String(assignment.leadId) : "";
+    const storageKey = leadId ? "metaLeadConversion:" + leadId : "";
+
+    try {
+      if (storageKey && sessionStorage.getItem(storageKey) === "true") return false;
+      if (storageKey) sessionStorage.setItem(storageKey, "true");
+    } catch {
+      // Continue without storage dedupe; Meta receives eventID for deduplication.
+    }
+
+    trackMetaStandardEvent("Lead", {
+      content_name: formName || "leads-parque-auco",
+      status: "submitted",
+      objective: objective || ""
+    }, leadId);
+
+    return true;
+  }
+
+  function waitForMetaPixelDispatch(dispatched) {
+    if (!dispatched) return Promise.resolve();
+    return new Promise((resolve) => window.setTimeout(resolve, 250));
+  }
   function normalizeChileanMobile(value) {
     let digits = String(value || "").replace(/\D/g, "");
 
@@ -909,6 +936,8 @@
           lead_id: assignment.leadId
         });
 
+        const metaLeadDispatched = trackMetaLeadEvent(assignment, "leads-parque-auco", payload.objetivo);
+
         saveThankYouState({
           leadId: assignment.leadId,
           whatsappUrl,
@@ -918,6 +947,7 @@
           submissionConfirmed: true
         });
 
+        await waitForMetaPixelDispatch(metaLeadDispatched);
         window.location.assign("/gracias");
       } catch (error) {
         if (String(error && error.message) === "netlify_submit_failed") {
