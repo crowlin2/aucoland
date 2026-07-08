@@ -633,12 +633,80 @@
     };
     return map[text] || text;
   }
+  const leadFormModalQuery = window.matchMedia("(max-width: 699px)");
+
+  function isLeadFormModalMode() {
+    return leadFormModalQuery.matches;
+  }
+
+  function openLeadFormModal() {
+    if (!isLeadFormModalMode()) return false;
+    const section = document.querySelector("#cotizar");
+    const form = document.querySelector("#lead-form");
+    if (!section || !form) return false;
+
+    document.body.classList.add("form-modal-open");
+    section.setAttribute("aria-modal", "true");
+    section.setAttribute("role", "dialog");
+    window.setTimeout(() => {
+      const target = form.querySelector("input:not([type='hidden']):not([tabindex='-1']), select, textarea") ||
+        form.querySelector("button:not([data-form-modal-close])");
+      if (target) target.focus({ preventScroll: true });
+    }, 80);
+    return true;
+  }
+
+  function closeLeadFormModal() {
+    const section = document.querySelector("#cotizar");
+    document.body.classList.remove("form-modal-open");
+    if (section) {
+      section.removeAttribute("aria-modal");
+      section.removeAttribute("role");
+    }
+  }
+
+  function setupLeadFormModal() {
+    const section = document.querySelector("#cotizar");
+    const form = document.querySelector("#lead-form");
+    if (!section || !form) return;
+
+    section.addEventListener("click", (event) => {
+      if (event.target === section && document.body.classList.contains("form-modal-open")) {
+        closeLeadFormModal();
+      }
+    });
+
+    document.querySelectorAll("[data-form-modal-close]").forEach((button) => {
+      button.addEventListener("click", closeLeadFormModal);
+    });
+    document.querySelectorAll('a[href="#lead-form"], a[href="#cotizar"]').forEach((link) => {
+      if (link.hasAttribute("data-whatsapp-cta")) return;
+      link.addEventListener("click", (event) => {
+        if (openLeadFormModal()) event.preventDefault();
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.body.classList.contains("form-modal-open")) {
+        closeLeadFormModal();
+      }
+    });
+
+    const handleModalModeChange = () => {
+      if (!isLeadFormModalMode()) closeLeadFormModal();
+    };
+    if (typeof leadFormModalQuery.addEventListener === "function") {
+      leadFormModalQuery.addEventListener("change", handleModalModeChange);
+    } else if (typeof leadFormModalQuery.addListener === "function") {
+      leadFormModalQuery.addListener(handleModalModeChange);
+    }
+  }
 
   function setupLeadIntent() {
     const form = document.querySelector("#lead-form");
 
     document.querySelectorAll("[data-objective]").forEach((control) => {
-      control.addEventListener("click", () => {
+      control.addEventListener("click", (event) => {
         if (form && control.dataset.objective) {
           selectFormValue(form, "objetivo", normalizeObjectiveValue(control.dataset.objective));
         }
@@ -647,6 +715,11 @@
           trackEvent("visit_booking_click", {
             placement: control.closest("section")?.id || "header"
           });
+        }
+
+        const target = control.getAttribute("href") || "";
+        if (!event.defaultPrevented && !control.hasAttribute("data-whatsapp-cta") && ["#lead-form", "#cotizar"].includes(target) && openLeadFormModal()) {
+          event.preventDefault();
         }
       });
     });
@@ -733,6 +806,10 @@
     const backButton = form.querySelector('[data-form-back]');
 
     const scrollToFormTop = () => {
+      if (document.body.classList.contains("form-modal-open")) {
+        form.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+        return;
+      }
       form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     };
 
@@ -1240,6 +1317,7 @@
   initializeAnalytics();
   applyCommercialConfig();
   setupTicker();
+  setupLeadFormModal();
   setupLeadIntent();
   setupWhatsappCtas();
   setupForm();

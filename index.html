@@ -34,6 +34,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Lora:wght@500;600&amp;display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="assets/fotos/panoramica-parque-auco.webp" fetchpriority="high">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -113,12 +114,13 @@
           <h2 id="contact-title">Recibe orientación personalizada</h2>
           <p>Déjanos tus datos y continúa la conversación por WhatsApp.</p>
           <figure class="contact-location-media">
-            <img src="assets/fotos/acceso-parque-auco.webp" alt="Acceso principal de Parque de Auco" loading="eager" decoding="async">
+            <img src="assets/fotos/acceso-parque-auco.webp" alt="Acceso principal de Parque de Auco" loading="lazy" decoding="async">
             <figcaption>Parque de Auco, Rinconada de Los Andes</figcaption>
           </figure>
         </div>
 
         <form class="lead-form full-form lead-form-two-step" id="lead-form" name="leads-parque-auco" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+          <button class="form-modal-close" type="button" data-form-modal-close aria-label="Cerrar formulario">&times;</button>
           <input type="hidden" name="form-name" value="leads-parque-auco">
           <p class="honeypot" hidden><label>No completar este campo<input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
 
