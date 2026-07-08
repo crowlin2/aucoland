@@ -76,9 +76,9 @@
         <a href="#convenios">Convenios</a>
         <a href="#capacidades">Capacidades</a>
         <a href="#mapa">Mapa</a>
-        <a class="nav-cta" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
+        <a class="nav-cta" href="#lead-form" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
       </nav>
-      <a class="mobile-quote" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
+      <a class="mobile-quote" href="#lead-form" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
     </header>
 
     <main id="inicio">
@@ -92,8 +92,8 @@
             <p class="hero-lead" data-copy="heroLead">Alternativas familiares perpetuas, con facilidades de pago.</p>
             <p class="hero-secondary" data-copy="heroSecondary">Recibe orientación personalizada y compara ubicaciones antes de decidir.</p>
             <div class="hero-actions">
-              <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
-              <a class="button button-light" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
+              <a class="button button-primary" href="#lead-form" data-objective="Planificando">Ver precios y alternativas</a>
+              <a class="button button-light" href="#lead-form" data-objective="Visita" data-event="visit_booking_click">Agendar una visita</a>
             </div>
             <ul class="hero-facts" aria-label="Condiciones comerciales principales">
               <li><strong data-config-value="price">Valor inicial</strong><span>Sepulturas perpetuas</span></li>
@@ -104,7 +104,7 @@
             <p class="hero-payment-note">Condiciones comerciales y convenios sujetos a evaluación, acreditación y vigencia.</p>
           </div>
         </div>
-        <a class="hero-scroll" href="#cotizar">Solicitar orientación <span aria-hidden="true">↓</span></a>
+        <a class="hero-scroll" href="#lead-form">Solicitar orientación <span aria-hidden="true">↓</span></a>
       </section>
 
       <section class="contact-section conversion-form" id="cotizar" aria-labelledby="contact-title">
@@ -165,52 +165,13 @@
 
           <div class="form-step" data-form-step="2" hidden>
             <fieldset class="choice-group" data-required-group="objetivo">
-              <legend>&iquest;Qu&eacute; necesitas revisar?</legend>
+              <legend>&iquest;Qu&eacute; necesitas?</legend>
               <div class="choice-grid">
-                <label class="choice-card"><input type="radio" name="objetivo" value="Conocer precios y alternativas." required><span>Conocer precios y alternativas.</span></label>
-                <label class="choice-card"><input type="radio" name="objetivo" value="Evaluar financiamiento."><span>Evaluar financiamiento.</span></label>
-                <label class="choice-card"><input type="radio" name="objetivo" value="Agendar una visita."><span>Agendar una visita.</span></label>
-                <label class="choice-card"><input type="radio" name="objetivo" value="Consultar por un convenio."><span>Consultar por un convenio.</span></label>
+                <label class="choice-card"><input type="radio" name="objetivo" value="Necesidad inmediata." required><span>Necesidad inmediata</span></label>
+                <label class="choice-card"><input type="radio" name="objetivo" value="Planificando."><span>Planificando</span></label>
+                <label class="choice-card"><input type="radio" name="objetivo" value="Visita."><span>Visita</span></label>
               </div>
               <span class="field-error" data-field-error-for="objetivo" aria-live="polite"></span>
-            </fieldset>
-
-            <fieldset class="choice-group" data-required-group="capacidad">
-              <legend>&iquest;Para cu&aacute;ntas personas buscas una alternativa?</legend>
-              <div class="choice-grid compact-choice-grid">
-                <label class="choice-card"><input type="radio" name="capacidad" value="2 personas." required><span>2 personas.</span></label>
-                <label class="choice-card"><input type="radio" name="capacidad" value="4 personas."><span>4 personas.</span></label>
-                <label class="choice-card"><input type="radio" name="capacidad" value="6 personas."><span>6 personas.</span></label>
-                <label class="choice-card"><input type="radio" name="capacidad" value="8 personas."><span>8 personas.</span></label>
-                <label class="choice-card"><input type="radio" name="capacidad" value="Todav&iacute;a no lo s&eacute;."><span>Todav&iacute;a no lo s&eacute;.</span></label>
-              </div>
-              <span class="field-error" data-field-error-for="capacidad" aria-live="polite"></span>
-            </fieldset>
-
-            <fieldset class="choice-group" data-required-group="plazo">
-              <legend>&iquest;Cu&aacute;ndo te gustar&iacute;a resolverlo?</legend>
-              <div class="choice-grid">
-                <label class="choice-card"><input type="radio" name="plazo" value="Lo antes posible." required><span>Lo antes posible.</span></label>
-                <label class="choice-card"><input type="radio" name="plazo" value="Durante los pr&oacute;ximos 3 meses."><span>Durante los pr&oacute;ximos 3 meses.</span></label>
-                <label class="choice-card"><input type="radio" name="plazo" value="Durante los pr&oacute;ximos 6 meses."><span>Durante los pr&oacute;ximos 6 meses.</span></label>
-                <label class="choice-card"><input type="radio" name="plazo" value="Solo estoy evaluando."><span>Solo estoy evaluando.</span></label>
-              </div>
-              <span class="field-error" data-field-error-for="plazo" aria-live="polite"></span>
-            </fieldset>
-
-            <fieldset class="choice-group optional-choice-group">
-              <legend>&iquest;Tienes alg&uacute;n convenio? <span class="optional-label">(opcional)</span></legend>
-              <div class="choice-grid compact-choice-grid">
-                <label class="choice-card"><input type="radio" name="convenio" value="Carabineros de Chile."><span>Carabineros de Chile.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="Municipalidad de Rinconada."><span>Municipalidad de Rinconada.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="Coopeuch."><span>Coopeuch.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="Andescoop."><span>Andescoop.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="Persona mayor."><span>Persona mayor.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="Otro convenio."><span>Otro convenio.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="No tengo convenio."><span>No tengo convenio.</span></label>
-                <label class="choice-card"><input type="radio" name="convenio" value="No estoy seguro."><span>No estoy seguro.</span></label>
-              </div>
-              <span class="field-error" data-field-error-for="convenio" aria-live="polite"></span>
             </fieldset>
 
             <div class="form-actions split-actions">
@@ -245,7 +206,7 @@
           <p class="eyebrow">Información esencial</p>
           <h2 id="benefits-title">Compara alternativas con información clara</h2>
           <p>Conoce las capacidades, formas de pago y ubicaciones antes de tomar una decisión.</p>
-          <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
+          <a class="button button-primary" href="#lead-form" data-objective="Planificando">Ver precios y alternativas</a>
         </div>
         <div class="trust-grid benefit-grid" aria-label="Beneficios de Parque de Auco">
           <div><strong>Capacidades de 2 a 8</strong><span>Alternativas para distintos grupos familiares.</span></div>
@@ -315,7 +276,7 @@
           <li><span>04</span><div><strong>Agendas una visita</strong><p>Coordinas el momento más conveniente.</p></div></li>
           <li><span>05</span><div><strong>Comparas ubicaciones</strong><p>Conoces el parque antes de decidir.</p></div></li>
         </ol>
-        <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
+        <a class="button button-primary" href="#lead-form" data-objective="Planificando">Ver precios y alternativas</a>
       </section>
 
       <section class="sector-section" id="fotografias" aria-labelledby="photos-title">
@@ -431,7 +392,7 @@
         <p>Orientación personalizada</p>
         <h2>Conoce las alternativas disponibles para tu familia</h2>
         <div>
-          <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
+          <a class="button button-primary" href="#lead-form" data-objective="Planificando">Ver precios y alternativas</a>
           <a class="button button-light" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
         </div>
       </section>

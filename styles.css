@@ -1600,8 +1600,9 @@ textarea { resize: vertical; }
   text-underline-offset: 0.22rem;
 }
 
-.conversion-form {
-  scroll-margin-top: 4.5rem;
+.conversion-form,
+.lead-form {
+  scroll-margin-top: 5.25rem;
 }
 
 .optional-label {

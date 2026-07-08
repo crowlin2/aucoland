@@ -206,7 +206,7 @@
     if (field.validity.valueMissing) {
       if (field.name === "nombre") return "Ingresa tu nombre.";
       if (field.name === "comuna") return "Selecciona una comuna.";
-      if (["objetivo", "capacidad", "plazo"].includes(field.name)) return "Selecciona una alternativa para continuar.";
+      if (field.name === "objetivo") return "Selecciona una alternativa para continuar.";
       return "Este campo es obligatorio.";
     }
     if (field.validity.patternMismatch) {
@@ -621,12 +621,15 @@
   function normalizeObjectiveValue(value) {
     const text = String(value || "").trim();
     const map = {
-      "Agendar visita": "Agendar una visita.",
-      "Agendar una visita": "Agendar una visita.",
-      "Recibir orientaci\u00f3n": "Conocer precios y alternativas.",
-      "Cotizar primero": "Conocer precios y alternativas.",
-      "Ver precios y alternativas": "Conocer precios y alternativas.",
-      "Consultar por un convenio": "Consultar por un convenio."
+      "Agendar visita": "Visita.",
+      "Agendar una visita": "Visita.",
+      "Visita": "Visita.",
+      "Recibir orientaci\u00f3n": "Planificando.",
+      "Cotizar primero": "Necesidad inmediata.",
+      "Ver precios y alternativas": "Planificando.",
+      "Consultar por un convenio": "Planificando.",
+      "Planificando": "Planificando.",
+      "Necesidad inmediata": "Necesidad inmediata."
     };
     return map[text] || text;
   }
