@@ -201,14 +201,16 @@
   function getFieldValidationMessage(field) {
     if (!field) return "";
     if (field.name === "telefono_nacional") {
-      return "Ingresa un n\u00famero m\u00f3vil chileno v\u00e1lido de 9 d\u00edgitos, comenzando con 9.";
+      return "Ingresa un n\u00famero de WhatsApp v\u00e1lido.";
     }
     if (field.validity.valueMissing) {
-      if (field.name === "objetivo") return "Selecciona una alternativa.";
+      if (field.name === "nombre") return "Ingresa tu nombre.";
+      if (field.name === "comuna") return "Selecciona una comuna.";
+      if (["objetivo", "capacidad", "plazo"].includes(field.name)) return "Selecciona una alternativa para continuar.";
       return "Este campo es obligatorio.";
     }
     if (field.validity.patternMismatch) {
-      return "Ingresa un n\u00famero m\u00f3vil chileno v\u00e1lido de 9 d\u00edgitos, comenzando con 9.";
+      return "Ingresa un n\u00famero de WhatsApp v\u00e1lido.";
     }
     return "Revisa este campo.";
   }
@@ -231,6 +233,68 @@
     return true;
   }
 
+  function getRadioGroup(form, fieldName) {
+    return Array.from(form.querySelectorAll('input[type="radio"][name="' + fieldName + '"]'));
+  }
+
+  function clearRadioGroupError(form, fieldName) {
+    getRadioGroup(form, fieldName).forEach((field) => {
+      field.setCustomValidity("");
+      field.removeAttribute("aria-invalid");
+      field.closest(".choice-card")?.classList.remove("is-invalid");
+    });
+    const error = getFieldErrorElement(form, fieldName);
+    if (error) error.textContent = "";
+  }
+
+  function setRadioGroupError(form, fieldName, message) {
+    getRadioGroup(form, fieldName).forEach((field) => {
+      field.setAttribute("aria-invalid", "true");
+      field.closest(".choice-card")?.classList.add("is-invalid");
+    });
+    const error = getFieldErrorElement(form, fieldName);
+    if (error) error.textContent = message;
+  }
+
+  function validateRadioGroup(form, fieldName) {
+    const fields = getRadioGroup(form, fieldName);
+    if (!fields.length) return true;
+    const required = fields.some((field) => field.required);
+    if (!required) {
+      clearRadioGroupError(form, fieldName);
+      return true;
+    }
+    const selected = fields.some((field) => field.checked);
+    if (!selected) {
+      const message = "Selecciona una alternativa para continuar.";
+      fields[0].setCustomValidity(message);
+      setRadioGroupError(form, fieldName, message);
+      return false;
+    }
+    fields.forEach((field) => field.setCustomValidity(""));
+    clearRadioGroupError(form, fieldName);
+    return true;
+  }
+
+  function getSelectedFormValue(form, fieldName) {
+    const radio = form.querySelector('input[type="radio"][name="' + fieldName + '"]:checked');
+    if (radio) return radio.value;
+    const field = form.elements[fieldName];
+    return field ? field.value : "";
+  }
+
+  function selectFormValue(form, fieldName, value) {
+    if (!form || !value) return;
+    const normalizedValue = String(value).trim();
+    const radio = Array.from(form.querySelectorAll('input[type="radio"][name="' + fieldName + '"]')).find((field) => field.value === normalizedValue);
+    if (radio) {
+      radio.checked = true;
+      clearRadioGroupError(form, fieldName);
+      return;
+    }
+    const field = form.elements[fieldName];
+    if (field && "value" in field) field.value = normalizedValue;
+  }
   function validateVisibleField(form, field) {
     if (!field || field.disabled || field.type === "hidden" || field.name === "bot-field") {
       return true;
@@ -238,6 +302,10 @@
 
     if (field.name === "telefono_nacional") {
       return validatePhoneField(form);
+    }
+
+    if (field.type === "radio") {
+      return validateRadioGroup(form, field.name);
     }
 
     field.setCustomValidity("");
@@ -251,8 +319,20 @@
     return true;
   }
 
-  function validateFormBeforeSubmit(form) {
-    const fields = Array.from(form.querySelectorAll("input, select, textarea")).filter((field) => field.name && field.type !== "hidden" && field.name !== "bot-field");
+  function getValidatableFields(scope) {
+    const seenRadioGroups = new Set();
+    return Array.from(scope.querySelectorAll("input, select, textarea")).filter((field) => {
+      if (!field.name || field.type === "hidden" || field.name === "bot-field" || field.disabled) return false;
+      if (field.type === "radio") {
+        if (seenRadioGroups.has(field.name)) return false;
+        seenRadioGroups.add(field.name);
+      }
+      return true;
+    });
+  }
+
+  function validateFormScope(form, scope) {
+    const fields = getValidatableFields(scope);
     let firstInvalid = null;
 
     fields.forEach((field) => {
@@ -267,6 +347,10 @@
     }
 
     return true;
+  }
+
+  function validateFormBeforeSubmit(form) {
+    return validateFormScope(form, form);
   }
 
   function saveThankYouState(payload) {
@@ -481,20 +565,39 @@
     ].join("\n");
   }
 
+  function cleanSentenceValue(value) {
+    return String(value || "").trim().replace(/[.。]+$/, "");
+  }
+
   function buildFormWhatsappMessage(payload, assignment) {
-    return [
-      "Hola, quiero recibir informacion sobre sepulturas familiares en Parque de Auco.",
-      "",
-      "Nombre: " + payload.nombre,
-      "Telefono o WhatsApp: " + payload.telefono_internacional,
-      "Comuna: " + payload.comuna,
-      "Me gustaria: " + payload.objetivo,
-      "Convenio: " + (payload.convenio || "No informado"),
-      "",
-      "Codigo de solicitud: " + assignment.leadId,
-      "Asesor asignado: " + assignment.agentName,
-      "Origen: aucofamilia.com"
-    ].join("\n");
+    const parts = [
+      "Hola, soy " + cleanSentenceValue(payload.nombre) + ".",
+      "Vivo en " + cleanSentenceValue(payload.comuna) + "."
+    ];
+
+    if (payload.capacidad) {
+      parts.push("Estoy buscando una alternativa para " + cleanSentenceValue(payload.capacidad).toLowerCase() + ".");
+    }
+
+    if (payload.objetivo) {
+      parts.push("Me interesa " + cleanSentenceValue(payload.objetivo).toLowerCase() + ".");
+    }
+
+    if (payload.plazo) {
+      parts.push("Me gustaria resolverlo " + cleanSentenceValue(payload.plazo).toLowerCase() + ".");
+    }
+
+    if (payload.convenio) {
+      parts.push("Mi convenio es " + cleanSentenceValue(payload.convenio) + ".");
+    }
+
+    parts.push("Llegue desde aucofamilia.com.");
+    parts.push("");
+    parts.push("Codigo de solicitud: " + assignment.leadId);
+    parts.push("Asesor asignado: " + assignment.agentName);
+    parts.push("Origen: aucofamilia.com");
+
+    return parts.join("\n");
   }
 
   function openAssignedWhatsapp(assignment, message, pendingWindow, contactSource, formType) {
@@ -515,14 +618,26 @@
     }
   }
 
+  function normalizeObjectiveValue(value) {
+    const text = String(value || "").trim();
+    const map = {
+      "Agendar visita": "Agendar una visita.",
+      "Agendar una visita": "Agendar una visita.",
+      "Recibir orientaci\u00f3n": "Conocer precios y alternativas.",
+      "Cotizar primero": "Conocer precios y alternativas.",
+      "Ver precios y alternativas": "Conocer precios y alternativas.",
+      "Consultar por un convenio": "Consultar por un convenio."
+    };
+    return map[text] || text;
+  }
+
   function setupLeadIntent() {
     const form = document.querySelector("#lead-form");
-    const objective = form && form.elements.objetivo;
 
     document.querySelectorAll("[data-objective]").forEach((control) => {
       control.addEventListener("click", () => {
-        if (objective && control.dataset.objective) {
-          objective.value = control.dataset.objective;
+        if (form && control.dataset.objective) {
+          selectFormValue(form, "objetivo", normalizeObjectiveValue(control.dataset.objective));
         }
 
         if (control.dataset.event === "visit_booking_click") {
@@ -535,6 +650,9 @@
 
     document.querySelectorAll("[data-capacity-option]").forEach((control) => {
       control.addEventListener("click", () => {
+        if (form && control.dataset.capacityOption) {
+          selectFormValue(form, "capacidad", control.dataset.capacityOption + " personas.");
+        }
         trackEvent("capacity_interest", {
           capacity: Number(control.dataset.capacityOption)
         });
@@ -606,6 +724,43 @@
 
     populateTrackingFields(form);
 
+    const stepOne = form.querySelector('[data-form-step="1"]');
+    const stepTwo = form.querySelector('[data-form-step="2"]');
+    const nextButton = form.querySelector('[data-form-next]');
+    const backButton = form.querySelector('[data-form-back]');
+
+    const scrollToFormTop = () => {
+      form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    };
+
+    const showFormStep = (stepNumber) => {
+      const isStepOne = stepNumber === 1;
+      if (stepOne) {
+        stepOne.hidden = !isStepOne;
+        stepOne.classList.toggle("is-active", isStepOne);
+      }
+      if (stepTwo) {
+        stepTwo.hidden = isStepOne;
+        stepTwo.classList.toggle("is-active", !isStepOne);
+      }
+      form.dataset.currentStep = String(stepNumber);
+      scrollToFormTop();
+    };
+
+    if (nextButton && stepOne) {
+      nextButton.addEventListener("click", () => {
+        if (!validateFormScope(form, stepOne)) return;
+        trackEvent("form_step_1_complete", {
+          form_name: "leads-parque-auco"
+        });
+        showFormStep(2);
+      });
+    }
+
+    if (backButton) {
+      backButton.addEventListener("click", () => showFormStep(1));
+    }
+
     const phoneField = form.elements.telefono_nacional;
     if (phoneField) {
       const syncPhoneValue = () => {
@@ -632,6 +787,10 @@
         if (field.name === "telefono_nacional") {
           field.value = normalizeChileanMobile(field.value);
         }
+        if (field.type === "radio") {
+          clearRadioGroupError(form, field.name);
+          return;
+        }
         if (field.checkValidity()) clearFieldError(form, field);
       });
       field.addEventListener("blur", () => validateVisibleField(form, field));
@@ -639,6 +798,16 @@
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+
+      if (form.dataset.currentStep !== "2") {
+        if (stepOne && validateFormScope(form, stepOne)) {
+          trackEvent("form_step_1_complete", {
+            form_name: "leads-parque-auco"
+          });
+          showFormStep(2);
+        }
+        return;
+      }
 
       if (!validateFormBeforeSubmit(form)) return;
       if (assignmentInFlight) return;
@@ -650,13 +819,13 @@
       const contactSource = "main_form";
       const formType = "lead_form";
 
-      setControlBusy(button, true, "Enviando...");
+      setControlBusy(button, true, "Guardando solicitud...");
       status.textContent = "";
 
       trackEvent("form_submit", {
         form_name: "leads-parque-auco",
-        objective: form.elements.objetivo.value,
-        has_agreement: Boolean(form.elements.convenio.value),
+        objective: getSelectedFormValue(form, "objetivo"),
+        has_agreement: Boolean(getSelectedFormValue(form, "convenio")),
         utm_source: form.elements.utm_source.value || "",
         utm_campaign: form.elements.utm_campaign.value || ""
       });
@@ -1079,6 +1248,15 @@
   setupFaq();
   trackEvent("page_view", { page_path: window.location.pathname });
 })();
+
+
+
+
+
+
+
+
+
 
 
 

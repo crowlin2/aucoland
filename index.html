@@ -76,9 +76,9 @@
         <a href="#convenios">Convenios</a>
         <a href="#capacidades">Capacidades</a>
         <a href="#mapa">Mapa</a>
-        <a class="nav-cta" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita</a>
+        <a class="nav-cta" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
       </nav>
-      <a class="mobile-quote" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita</a>
+      <a class="mobile-quote" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
     </header>
 
     <main id="inicio">
@@ -92,8 +92,8 @@
             <p class="hero-lead" data-copy="heroLead">Alternativas familiares perpetuas, con facilidades de pago.</p>
             <p class="hero-secondary" data-copy="heroSecondary">Recibe orientación personalizada y compara ubicaciones antes de decidir.</p>
             <div class="hero-actions">
-              <a class="button button-primary" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita al parque</a>
-              <a class="button button-light" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="hero"><span data-button-label>Cotizar por WhatsApp</span></a>
+              <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
+              <a class="button button-light" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
             </div>
             <ul class="hero-facts" aria-label="Condiciones comerciales principales">
               <li><strong data-config-value="price">Valor inicial</strong><span>Sepulturas perpetuas</span></li>
@@ -118,46 +118,108 @@
           </figure>
         </div>
 
-        <form class="lead-form full-form" id="lead-form" name="leads-parque-auco" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+        <form class="lead-form full-form lead-form-two-step" id="lead-form" name="leads-parque-auco" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" novalidate>
           <input type="hidden" name="form-name" value="leads-parque-auco">
           <p class="honeypot" hidden><label>No completar este campo<input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
-          <div class="form-intro">
+
+          <div class="form-intro" data-form-intro>
             <span>Solicitud de contacto</span>
-            <h3>Cu&eacute;ntanos c&oacute;mo podemos ayudarte</h3>
-            <p>Un ejecutivo podr&aacute; orientarte y coordinar una visita al parque.</p>
+            <h3>Encuentra una alternativa para tu familia</h3>
+            <p>Recibe informaci&oacute;n sobre capacidades, precios y opciones de financiamiento directamente por WhatsApp.</p>
           </div>
-          <div class="form-grid">
-            <label>Nombre
-              <input type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required>
-              <span class="field-error" data-field-error-for="nombre" aria-live="polite"></span>
-            </label>
-            <label>Tel&eacute;fono o WhatsApp
-              <span class="phone-input-group">
-                <span class="phone-prefix" aria-hidden="true">+56</span>
-                <input type="tel" name="telefono_nacional" autocomplete="tel-national" inputmode="numeric" maxlength="9" pattern="9[0-9]{8}" placeholder="988263485" required data-phone-input>
-              </span>
-              <span class="field-error" data-field-error-for="telefono_nacional" aria-live="polite"></span>
-            </label>
-            <label>Comuna
-              <input type="text" name="comuna" autocomplete="address-level2" placeholder="Tu comuna" required>
-              <span class="field-error" data-field-error-for="comuna" aria-live="polite"></span>
-            </label>
-            <label>&iquest;Qu&eacute; te gustar&iacute;a hacer?
-              <select name="objetivo" required>
-                <option value="">Selecciona una alternativa</option>
-                <option>Agendar visita</option>
-                <option>Recibir orientaci&oacute;n</option>
-                <option>Cotizar primero</option>
-              </select>
+
+          <div class="form-benefits" aria-label="Beneficios de la orientaci&oacute;n">
+            <span>Desde 118 UF</span>
+            <span>Pie desde 10%</span>
+            <span>Hasta 72 cuotas</span>
+            <span>Capacidades de 2 a 8 personas</span>
+            <span>Convenios disponibles</span>
+          </div>
+
+          <div class="form-step is-active" data-form-step="1">
+            <div class="form-grid">
+              <label>Nombre
+                <input type="text" name="nombre" autocomplete="name" placeholder="Tu nombre" required data-step-one-field>
+                <span class="field-error" data-field-error-for="nombre" aria-live="polite"></span>
+              </label>
+              <label>WhatsApp
+                <span class="phone-input-group">
+                  <span class="phone-prefix" aria-hidden="true">+56</span>
+                  <input type="tel" name="telefono_nacional" autocomplete="tel-national" inputmode="numeric" maxlength="9" pattern="9[0-9]{8}" placeholder="988263485" required data-phone-input data-step-one-field>
+                </span>
+                <span class="field-error" data-field-error-for="telefono_nacional" aria-live="polite"></span>
+              </label>
+              <label>Comuna
+                <input type="text" name="comuna" autocomplete="address-level2" placeholder="Tu comuna" required data-step-one-field>
+                <span class="field-error" data-field-error-for="comuna" aria-live="polite"></span>
+              </label>
+            </div>
+            <button class="button button-primary button-full form-next" type="button" data-form-next><span data-button-label>Ver alternativas disponibles</span></button>
+            <p class="form-note">Sin compromiso de compra. Tus datos ser&aacute;n utilizados &uacute;nicamente para entregarte informaci&oacute;n.</p>
+            <div class="form-assurances" aria-label="Se&ntilde;ales de confianza">
+              <span>Orientaci&oacute;n personalizada</span>
+              <span>Puedes visitar el parque antes de decidir</span>
+              <span>Tus datos no ser&aacute;n compartidos con terceros</span>
+            </div>
+          </div>
+
+          <div class="form-step" data-form-step="2" hidden>
+            <fieldset class="choice-group" data-required-group="objetivo">
+              <legend>&iquest;Qu&eacute; necesitas revisar?</legend>
+              <div class="choice-grid">
+                <label class="choice-card"><input type="radio" name="objetivo" value="Conocer precios y alternativas." required><span>Conocer precios y alternativas.</span></label>
+                <label class="choice-card"><input type="radio" name="objetivo" value="Evaluar financiamiento."><span>Evaluar financiamiento.</span></label>
+                <label class="choice-card"><input type="radio" name="objetivo" value="Agendar una visita."><span>Agendar una visita.</span></label>
+                <label class="choice-card"><input type="radio" name="objetivo" value="Consultar por un convenio."><span>Consultar por un convenio.</span></label>
+              </div>
               <span class="field-error" data-field-error-for="objetivo" aria-live="polite"></span>
-            </label>
-            <label>&iquest;Tienes convenio? <span class="optional-label">(opcional)</span>
-              <select name="convenio" data-agreement-select>
-                <option value="">No tengo o no estoy seguro</option>
-              </select>
+            </fieldset>
+
+            <fieldset class="choice-group" data-required-group="capacidad">
+              <legend>&iquest;Para cu&aacute;ntas personas buscas una alternativa?</legend>
+              <div class="choice-grid compact-choice-grid">
+                <label class="choice-card"><input type="radio" name="capacidad" value="2 personas." required><span>2 personas.</span></label>
+                <label class="choice-card"><input type="radio" name="capacidad" value="4 personas."><span>4 personas.</span></label>
+                <label class="choice-card"><input type="radio" name="capacidad" value="6 personas."><span>6 personas.</span></label>
+                <label class="choice-card"><input type="radio" name="capacidad" value="8 personas."><span>8 personas.</span></label>
+                <label class="choice-card"><input type="radio" name="capacidad" value="Todav&iacute;a no lo s&eacute;."><span>Todav&iacute;a no lo s&eacute;.</span></label>
+              </div>
+              <span class="field-error" data-field-error-for="capacidad" aria-live="polite"></span>
+            </fieldset>
+
+            <fieldset class="choice-group" data-required-group="plazo">
+              <legend>&iquest;Cu&aacute;ndo te gustar&iacute;a resolverlo?</legend>
+              <div class="choice-grid">
+                <label class="choice-card"><input type="radio" name="plazo" value="Lo antes posible." required><span>Lo antes posible.</span></label>
+                <label class="choice-card"><input type="radio" name="plazo" value="Durante los pr&oacute;ximos 3 meses."><span>Durante los pr&oacute;ximos 3 meses.</span></label>
+                <label class="choice-card"><input type="radio" name="plazo" value="Durante los pr&oacute;ximos 6 meses."><span>Durante los pr&oacute;ximos 6 meses.</span></label>
+                <label class="choice-card"><input type="radio" name="plazo" value="Solo estoy evaluando."><span>Solo estoy evaluando.</span></label>
+              </div>
+              <span class="field-error" data-field-error-for="plazo" aria-live="polite"></span>
+            </fieldset>
+
+            <fieldset class="choice-group optional-choice-group">
+              <legend>&iquest;Tienes alg&uacute;n convenio? <span class="optional-label">(opcional)</span></legend>
+              <div class="choice-grid compact-choice-grid">
+                <label class="choice-card"><input type="radio" name="convenio" value="Carabineros de Chile."><span>Carabineros de Chile.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="Municipalidad de Rinconada."><span>Municipalidad de Rinconada.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="Coopeuch."><span>Coopeuch.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="Andescoop."><span>Andescoop.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="Persona mayor."><span>Persona mayor.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="Otro convenio."><span>Otro convenio.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="No tengo convenio."><span>No tengo convenio.</span></label>
+                <label class="choice-card"><input type="radio" name="convenio" value="No estoy seguro."><span>No estoy seguro.</span></label>
+              </div>
               <span class="field-error" data-field-error-for="convenio" aria-live="polite"></span>
-            </label>
+            </fieldset>
+
+            <div class="form-actions split-actions">
+              <button class="button button-light form-back" type="button" data-form-back>Volver</button>
+              <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true"><span data-button-label>Recibir informaci&oacute;n por WhatsApp</span></button>
+            </div>
+            <p class="form-note">Tus datos ser&aacute;n utilizados para responder esta solicitud. Revisa nuestra <a href="/politica-de-privacidad" target="_blank" rel="noopener">Pol&iacute;tica de Privacidad</a>.</p>
           </div>
+
           <input type="hidden" name="telefono_internacional">
           <input type="hidden" name="utm_source">
           <input type="hidden" name="utm_medium">
@@ -174,8 +236,6 @@
           <input type="hidden" name="asesor_asignado">
           <input type="hidden" name="whatsapp_asesor">
           <input type="hidden" name="lead_id">
-          <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true"><span data-button-label>Enviar formulario</span></button>
-          <p class="form-note">Tus datos ser&aacute;n utilizados para responder esta solicitud. Revisa nuestra <a href="/politica-de-privacidad" target="_blank" rel="noopener">Pol&iacute;tica de Privacidad</a>.</p>
           <p class="form-status" role="status" aria-live="polite"></p>
         </form>
       </section>
@@ -185,7 +245,7 @@
           <p class="eyebrow">Información esencial</p>
           <h2 id="benefits-title">Compara alternativas con información clara</h2>
           <p>Conoce las capacidades, formas de pago y ubicaciones antes de tomar una decisión.</p>
-          <a class="button button-primary" href="#cotizar" data-objective="Recibir orientación">Recibir orientación</a>
+          <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
         </div>
         <div class="trust-grid benefit-grid" aria-label="Beneficios de Parque de Auco">
           <div><strong>Capacidades de 2 a 8</strong><span>Alternativas para distintos grupos familiares.</span></div>
@@ -201,7 +261,7 @@
           <h2 id="agreements-title" data-config-value="agreement-heading">Convenios disponibles</h2>
           <p>Consulta si puedes acceder al beneficio al momento de solicitar orientación.</p>
           <p class="agreement-note">Sujeto a acreditación y condiciones vigentes.</p>
-          <a class="button button-light" href="#cotizar" data-objective="Recibir orientación">Consultar mi convenio</a>
+          <a class="button button-light" href="#cotizar" data-objective="Consultar por un convenio">Consultar mi convenio</a>
         </div>
         <div class="agreements-panel">
           <h3>Convenios informados</h3>
@@ -221,22 +281,22 @@
             <article class="capacity-card">
               <img src="assets/capacidades/capacidad-2.webp" alt="Diagrama referencial de una sepultura de 2 capacidades" loading="lazy" decoding="async">
               <div><span>2 capacidades</span><h3>Alternativa compacta</h3></div>
-              <a class="button button-stone" href="#cotizar" data-objective="Recibir orientación" data-capacity-option="2">Recibir orientación</a>
+              <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="2">Ver precios y alternativas</a>
             </article>
             <article class="capacity-card">
               <img src="assets/capacidades/capacidad-4.webp" alt="Diagrama referencial de una sepultura de 4 capacidades" loading="lazy" decoding="async">
               <div><span>4 capacidades</span><h3>Alternativa familiar</h3></div>
-              <a class="button button-stone" href="#cotizar" data-objective="Recibir orientación" data-capacity-option="4">Recibir orientación</a>
+              <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="4">Ver precios y alternativas</a>
             </article>
             <article class="capacity-card">
               <img src="assets/capacidades/capacidad-6.webp" alt="Diagrama referencial de una sepultura de 6 capacidades" loading="lazy" decoding="async">
               <div><span>6 capacidades</span><h3>Familia ampliada</h3></div>
-              <a class="button button-stone" href="#cotizar" data-objective="Recibir orientación" data-capacity-option="6">Recibir orientación</a>
+              <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="6">Ver precios y alternativas</a>
             </article>
             <article class="capacity-card">
               <img src="assets/capacidades/capacidad-8.webp" alt="Diagrama referencial de una sepultura de 8 capacidades" loading="lazy" decoding="async">
               <div><span>8 capacidades</span><h3>Mayor capacidad familiar</h3></div>
-              <a class="button button-stone" href="#cotizar" data-objective="Recibir orientación" data-capacity-option="8">Recibir orientación</a>
+              <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="8">Ver precios y alternativas</a>
             </article>
           </div>
           <p class="capacity-note">Diagramas referenciales. La alternativa final depende de disponibilidad y ubicación.</p>
@@ -255,7 +315,7 @@
           <li><span>04</span><div><strong>Agendas una visita</strong><p>Coordinas el momento más conveniente.</p></div></li>
           <li><span>05</span><div><strong>Comparas ubicaciones</strong><p>Conoces el parque antes de decidir.</p></div></li>
         </ol>
-        <a class="button button-primary" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita</a>
+        <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
       </section>
 
       <section class="sector-section" id="fotografias" aria-labelledby="photos-title">
@@ -273,7 +333,7 @@
               <p id="sector-tag">Sector Roble</p>
               <h3 id="sector-name">Sombra, amplitud y árboles maduros</h3>
               <p id="sector-description">Alternativas familiares de 4 y 8 capacidades.</p>
-              <a href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita</a>
+              <a href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
             </div>
           </div>
           <div class="sector-tabs" role="tablist" aria-label="Fotografías de sectores del parque">
@@ -298,7 +358,7 @@
             <strong data-config-value="installments">Financiamiento</strong>
           </div>
           <p>También puedes consultar los convenios disponibles y sus condiciones vigentes.</p>
-          <a class="button button-light" href="#cotizar" data-objective="Recibir orientación">Recibir orientación</a>
+          <a class="button button-light" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
           <small class="payment-disclaimer">Financiamiento y descuentos sujetos a evaluación, acreditación y condiciones vigentes.</small>
         </div>
       </section>
@@ -346,7 +406,7 @@
               <button type="button" data-map-location="nichos">Nichos temporales</button>
               <button type="button" data-map-location="plaza">Plaza de la Cruz</button>
             </div>
-            <a class="button button-primary button-full" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita al parque</a>
+            <a class="button button-primary button-full" href="#cotizar" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
           </aside>
         </div>
       </section>
@@ -371,8 +431,8 @@
         <p>Orientación personalizada</p>
         <h2>Conoce las alternativas disponibles para tu familia</h2>
         <div>
-          <a class="button button-primary" href="#cotizar" data-objective="Agendar visita" data-event="visit_booking_click">Agendar visita</a>
-          <a class="button button-light" href="#cotizar" data-objective="Recibir orientación">Recibir orientación</a>
+          <a class="button button-primary" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
+          <a class="button button-light" href="#cotizar" data-objective="Ver precios y alternativas">Ver precios y alternativas</a>
         </div>
       </section>
     </main>
@@ -381,7 +441,7 @@
 
     <a class="sticky-whatsapp" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="floating" aria-label="Hablar con un asesor por WhatsApp">
       <img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true">
-      <span data-button-label>Cotizar por WhatsApp</span>
+      <span data-button-label>WhatsApp</span>
     </a>
 
     <footer class="site-footer">
@@ -400,4 +460,8 @@
     <script src="script.js"></script>
   </body>
 </html>
+
+
+
+
 
