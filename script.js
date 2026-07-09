@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   "use strict";
 
   const config = window.AUCO_CONFIG || {
@@ -120,7 +120,7 @@
       window.gtag("config", gaId, { send_page_view: false });
     }
 
-    if (metaId && !window.AUCO_META_PIXEL_BASE_LOADED) {
+    if (metaId) {
       if (!window.fbq) {
         const fbq = function () {
           fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments);
@@ -133,7 +133,6 @@
         window._fbq = fbq;
       }
       injectScript("https://connect.facebook.net/en_US/fbevents.js", "auco-meta-pixel");
-      window.fbq("set", "autoConfig", false, metaId);
       window.fbq("init", metaId);
     }
   }
@@ -145,9 +144,7 @@
 
     if (typeof window.fbq === "function") {
       if (name === "page_view") {
-        if (!window.AUCO_META_PIXEL_BASE_LOADED) {
-          window.fbq("track", "PageView");
-        }
+        window.fbq("track", "PageView");
       } else {
         window.fbq("trackCustom", name, safeParameters);
       }
@@ -166,11 +163,11 @@
 
   function trackMetaContactEvent(assignment, contactSource, formType) {
     const leadId = assignment && assignment.leadId ? String(assignment.leadId) : "";
-    const storageKey = leadId ? "metaContactEvent:" + leadId : "";
+    const sessionDedupeKey = "aucoContactEventFired";
 
     try {
-      if (storageKey && sessionStorage.getItem(storageKey) === "true") return;
-      if (storageKey) sessionStorage.setItem(storageKey, "true");
+      if (sessionStorage.getItem(sessionDedupeKey) === "true") return;
+      sessionStorage.setItem(sessionDedupeKey, "true");
     } catch {
       // Continue without dedupe if sessionStorage is unavailable.
     }
@@ -911,6 +908,14 @@
           objective: payload.objetivo,
           lead_id: assignment.leadId
         });
+
+        // Standard Meta Lead event for proper ad attribution & optimization
+        trackMetaStandardEvent("Lead", {
+          content_name: "parque_auco_lead",
+          content_category: payload.objetivo || "",
+          value: config.priceUF || 0,
+          currency: "CLP"
+        }, assignment.leadId);
 
         saveThankYouState({
           leadId: assignment.leadId,
