@@ -120,7 +120,7 @@
       window.gtag("config", gaId, { send_page_view: false });
     }
 
-    if (metaId) {
+    if (metaId && !window.AUCO_META_PIXEL_BASE_LOADED) {
       if (!window.fbq) {
         const fbq = function () {
           fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments);
@@ -144,7 +144,9 @@
 
     if (typeof window.fbq === "function") {
       if (name === "page_view") {
-        window.fbq("track", "PageView");
+        if (!window.AUCO_META_PIXEL_BASE_LOADED) {
+          window.fbq("track", "PageView");
+        }
       } else {
         window.fbq("trackCustom", name, safeParameters);
       }
