@@ -183,32 +183,6 @@
     }, leadId ? leadId + "-CONTACT" : "");
   }
 
-  function trackMetaLeadEvent(assignment, formName, objective) {
-    if (typeof window.fbq !== "function") return false;
-
-    const leadId = assignment && assignment.leadId ? String(assignment.leadId) : "";
-    const storageKey = leadId ? "metaLeadConversion:" + leadId : "";
-
-    try {
-      if (storageKey && sessionStorage.getItem(storageKey) === "true") return false;
-      if (storageKey) sessionStorage.setItem(storageKey, "true");
-    } catch {
-      // Continue without storage dedupe; Meta receives eventID for deduplication.
-    }
-
-    trackMetaStandardEvent("Lead", {
-      content_name: formName || "leads-parque-auco",
-      status: "submitted",
-      objective: objective || ""
-    }, leadId);
-
-    return true;
-  }
-
-  function waitForMetaPixelDispatch(dispatched) {
-    if (!dispatched) return Promise.resolve();
-    return new Promise((resolve) => window.setTimeout(resolve, 250));
-  }
   function normalizeChileanMobile(value) {
     let digits = String(value || "").replace(/\D/g, "");
 
@@ -896,7 +870,8 @@
       setControlBusy(button, true, "Guardando solicitud...");
       status.textContent = "";
 
-      trackEvent("form_submit", {
+      // This is only a valid attempt; Meta Lead is sent after the form is saved.
+      trackEvent("form_submit_attempt", {
         form_name: "leads-parque-auco",
         objective: getSelectedFormValue(form, "objetivo"),
         utm_source: form.elements.utm_source.value || "",
@@ -936,8 +911,6 @@
           lead_id: assignment.leadId
         });
 
-        const metaLeadDispatched = trackMetaLeadEvent(assignment, "leads-parque-auco", payload.objetivo);
-
         saveThankYouState({
           leadId: assignment.leadId,
           whatsappUrl,
@@ -947,7 +920,6 @@
           submissionConfirmed: true
         });
 
-        await waitForMetaPixelDispatch(metaLeadDispatched);
         window.location.assign("/gracias");
       } catch (error) {
         if (String(error && error.message) === "netlify_submit_failed") {
