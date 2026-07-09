@@ -133,6 +133,7 @@
         window._fbq = fbq;
       }
       injectScript("https://connect.facebook.net/en_US/fbevents.js", "auco-meta-pixel");
+      window.fbq("set", "autoConfig", false, metaId);
       window.fbq("init", metaId);
     }
   }
