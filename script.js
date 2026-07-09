@@ -911,14 +911,6 @@
           lead_id: assignment.leadId
         });
 
-        // Standard Meta Lead event for proper ad attribution & optimization
-        trackMetaStandardEvent("Lead", {
-          content_name: "parque_auco_lead",
-          content_category: payload.objetivo || "",
-          value: config.priceUF || 0,
-          currency: "CLP"
-        }, assignment.leadId);
-
         saveThankYouState({
           leadId: assignment.leadId,
           whatsappUrl,

@@ -1,4 +1,4 @@
 window.AUCO_ANALYTICS_CONFIG = Object.freeze({
-  gaMeasurementId: "",
+  gaMeasurementId: "AW-18301399998",
   metaPixelId: "1004828548959223"
 });
