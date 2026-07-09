@@ -75,7 +75,12 @@ Eventos estandar de Meta Pixel:
 - `Lead`: se dispara una sola vez en `/gracias` cuando existe una solicitud confirmada y reciente.
 - `Contact`: se dispara una sola vez por `lead_id` cuando el usuario abre WhatsApp para contactar al asesor.
 
-Los demas eventos del embudo se mantienen como `trackCustom` para diagnostico y audiencias, sin marcarlos como conversion estandar.
+Eventos de embudo:
+
+- `form_submit_attempt`: intento valido despues de validar campos. No usar como conversion, porque aun puede fallar la Function o Netlify Forms.
+- `lead_saved`: envio confirmado por Netlify Forms. Luego `/gracias` dispara el evento estandar `Lead`.
+
+Para Meta, la conversion de formulario debe configurarse como el evento estandar `Lead`, no como click en boton ni como `form_submit_attempt`. El click en el boton solo indica intencion; el lead existe cuando el POST fue confirmado y se carga `/gracias` con una solicitud reciente.
 
 La configuración opcional existente sigue usando:
 
