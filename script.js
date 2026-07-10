@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   "use strict";
 
   const config = window.AUCO_CONFIG || {
@@ -151,11 +151,11 @@
 
   function trackMetaContactEvent(assignment, contactSource, formType) {
     const leadId = assignment && assignment.leadId ? String(assignment.leadId) : "";
-    const storageKey = leadId ? "metaContactEvent:" + leadId : "";
+    const sessionDedupeKey = "aucoContactEventFired";
 
     try {
-      if (storageKey && sessionStorage.getItem(storageKey) === "true") return;
-      if (storageKey) sessionStorage.setItem(storageKey, "true");
+      if (sessionStorage.getItem(sessionDedupeKey) === "true") return;
+      sessionStorage.setItem(sessionDedupeKey, "true");
     } catch {
       // Continue without dedupe if sessionStorage is unavailable.
     }

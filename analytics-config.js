@@ -1,3 +1,3 @@
 window.AUCO_ANALYTICS_CONFIG = Object.freeze({
-  gaMeasurementId: ""
+  gaMeasurementId: "AW-18301399998"
 });
