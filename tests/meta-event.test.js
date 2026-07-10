@@ -132,6 +132,24 @@ test("la versión estática tiene un único propietario del Pixel", () => {
   assert.equal(thanks.includes("eventID: leadId"), true);
 });
 
+test("desactiva eventos automáticos antes de inicializar Meta en todas las páginas", () => {
+  const pages = [
+    ["inicio", path.join(root, "index.html")],
+    ["gracias", path.join(root, "gracias", "index.html")],
+    ["privacidad", path.join(root, "politica-de-privacidad", "index.html")]
+  ];
+
+  for (const [name, file] of pages) {
+    const html = fs.readFileSync(file, "utf8");
+    const autoConfigIndex = html.indexOf("fbq('set', 'autoConfig', false, '1004828548959223')");
+    const initIndex = html.indexOf("fbq('init', '1004828548959223')");
+
+    assert.equal(autoConfigIndex >= 0, true, `${name}: falta desactivar autoConfig`);
+    assert.equal(initIndex >= 0, true, `${name}: falta inicializar el Pixel`);
+    assert.equal(autoConfigIndex < initIndex, true, `${name}: autoConfig debe desactivarse antes de init`);
+  }
+});
+
 test("las interacciones de ubicación y galería no se convierten en Lead", () => {
   const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
