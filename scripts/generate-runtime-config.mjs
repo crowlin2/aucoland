@@ -22,8 +22,7 @@ await cp(
 );
 
 const analytics = {
-  gaMeasurementId: process.env.VITE_GA_MEASUREMENT_ID || "",
-  metaPixelId: process.env.VITE_META_PIXEL_ID || ""
+  gaMeasurementId: process.env.VITE_GA_MEASUREMENT_ID || ""
 };
 
 const analyticsOutput =

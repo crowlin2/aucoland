@@ -57,16 +57,14 @@
             });
           }
 
-          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(metaLeadKey) !== "true") {
+          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(metaLeadKey) !== "true" && typeof window.fbq === "function") {
+            window.fbq("track", "Lead", {
+              content_name: "leads-parque-auco",
+              status: "submitted"
+            }, {
+              eventID: leadId
+            });
             sessionStorage.setItem(metaLeadKey, "true");
-            if (typeof window.fbq === "function") {
-              window.fbq("track", "Lead", {
-                content_name: "leads-parque-auco",
-                status: "submitted"
-              }, {
-                eventID: leadId
-              });
-            }
           }
         } catch (error) {
           console.error("Google Ads page-load conversion skipped.", error);
