@@ -17,11 +17,16 @@
     "utm_content",
     "utm_term",
     "fbclid",
-    "gclid"
+    "gclid",
+    "fbp",
+    "fbc"
   ];
   const ASSIGNMENT_ENDPOINT = "/.netlify/functions/asignar-lead";
+  const META_EVENT_ENDPOINT = "/.netlify/functions/meta-event";
   const TRACKING_STORAGE_PREFIX = "aucoTracking:";
+  const ATTRIBUTION_TTL_MS = 90 * 24 * 60 * 60 * 1000;
   const ASSIGNMENT_TIMEOUT_MS = 8000;
+  const META_EVENT_TIMEOUT_MS = 3000;
   const THANK_YOU_STORAGE_KEY = "aucoThankYouState";
   const THANK_YOU_MAX_AGE_MS = 10 * 60 * 1000;
   let assignmentInFlight = false;
@@ -107,7 +112,6 @@
 
   function initializeAnalytics() {
     const gaId = String(analyticsConfig.gaMeasurementId || "").trim();
-    const metaId = String(analyticsConfig.metaPixelId || "").trim();
 
     window.dataLayer = window.dataLayer || [];
 
@@ -119,22 +123,6 @@
       window.gtag("js", new Date());
       window.gtag("config", gaId, { send_page_view: false });
     }
-
-    if (metaId && !window.AUCO_META_PIXEL_BASE_LOADED) {
-      if (!window.fbq) {
-        const fbq = function () {
-          fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments);
-        };
-        fbq.push = fbq;
-        fbq.loaded = true;
-        fbq.version = "2.0";
-        fbq.queue = [];
-        window.fbq = fbq;
-        window._fbq = fbq;
-      }
-      injectScript("https://connect.facebook.net/en_US/fbevents.js", "auco-meta-pixel");
-      window.fbq("init", metaId);
-    }
   }
 
   function trackEvent(name, parameters) {
@@ -142,14 +130,12 @@
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(Object.assign({ event: name }, safeParameters));
 
-    if (typeof window.fbq === "function") {
-      if (name === "page_view") {
-        if (!window.AUCO_META_PIXEL_BASE_LOADED) {
-          window.fbq("track", "PageView");
-        }
-      } else {
-        window.fbq("trackCustom", name, safeParameters);
-      }
+    if (typeof window.fbq !== "function") return;
+
+    if (name === "visit_booking_click") {
+      window.fbq("trackCustom", name, { placement: safeParameters.placement || "" });
+    } else if (name === "capacity_interest") {
+      window.fbq("trackCustom", name, { capacity: Number(safeParameters.capacity) || 0 });
     }
   }
 
@@ -786,23 +772,143 @@
 
   function populateTrackingFields(form) {
     const params = new URLSearchParams(window.location.search);
+
     trackingKeys.forEach((key) => {
       const input = form.elements[key];
       if (!input) return;
-
-      const currentValue = params.get(key);
-      const storageKey = TRACKING_STORAGE_PREFIX + key;
-      if (currentValue) {
-        input.value = currentValue;
-        sessionStorage.setItem(storageKey, currentValue);
-      } else {
-        input.value = sessionStorage.getItem(storageKey) || "";
-      }
+      input.value = resolveTrackingValue(key, params);
     });
+
+    if (form.elements.landing_page) {
+      form.elements.landing_page.value = resolveFirstTouchValue("landingPage", window.location.origin + window.location.pathname);
+    }
+    if (form.elements.landing_referrer) {
+      form.elements.landing_referrer.value = resolveFirstTouchValue("landingReferrer", sanitizeUrl(document.referrer) || "direct");
+    }
     if (form.elements.page_url) form.elements.page_url.value = window.location.href;
     if (form.elements.pagina_origen) form.elements.pagina_origen.value = window.location.pathname;
     if (form.elements.referrer) form.elements.referrer.value = document.referrer || "";
     if (form.elements.fecha_envio) form.elements.fecha_envio.value = new Date().toISOString();
+  }
+
+  function sanitizeUrl(value) {
+    try {
+      const url = new URL(String(value));
+      return url.origin + url.pathname;
+    } catch {
+      return "";
+    }
+  }
+
+  function readCookie(name) {
+    const prefix = name + "=";
+    const item = document.cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith(prefix));
+    return item ? decodeURIComponent(item.slice(prefix.length)) : "";
+  }
+
+  function readStoredTrackingValue(key) {
+    const storageKey = TRACKING_STORAGE_PREFIX + key;
+
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const stored = JSON.parse(raw);
+        const capturedAt = Number(stored && stored.capturedAt);
+        if (stored && typeof stored.value === "string" && capturedAt && Date.now() - capturedAt <= ATTRIBUTION_TTL_MS) {
+          return stored.value;
+        }
+        localStorage.removeItem(storageKey);
+      }
+    } catch {
+      // Fall back to the legacy session value below.
+    }
+
+    try {
+      return sessionStorage.getItem(storageKey) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function storeTrackingValue(key, value) {
+    if (!value) return;
+    const storageKey = TRACKING_STORAGE_PREFIX + key;
+    const record = JSON.stringify({ value: String(value), capturedAt: Date.now() });
+
+    try {
+      localStorage.setItem(storageKey, record);
+    } catch {
+      // Continue with session storage when persistent storage is unavailable.
+    }
+
+    try {
+      sessionStorage.setItem(storageKey, String(value));
+    } catch {
+      // Attribution storage is best effort and must not block the form.
+    }
+  }
+
+  function buildFbc(fbclid) {
+    return fbclid ? "fb.1." + Date.now() + "." + fbclid : "";
+  }
+
+  function resolveTrackingValue(key, params) {
+    let currentValue = params.get(key) || "";
+
+    if (key === "fbp") currentValue = readCookie("_fbp") || currentValue;
+    if (key === "fbc") currentValue = readCookie("_fbc") || currentValue || buildFbc(params.get("fbclid") || "");
+
+    if (currentValue) {
+      storeTrackingValue(key, currentValue);
+      return currentValue;
+    }
+
+    return readStoredTrackingValue(key);
+  }
+
+  function resolveFirstTouchValue(key, fallbackValue) {
+    const stored = readStoredTrackingValue(key);
+    if (stored) return stored;
+    storeTrackingValue(key, fallbackValue);
+    return fallbackValue;
+  }
+
+  async function sendMetaLeadToServer(payload, assignment) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), META_EVENT_TIMEOUT_MS);
+
+    try {
+      const response = await fetch(META_EVENT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventName: "Lead",
+          eventId: assignment.leadId,
+          eventSourceUrl: payload.page_url || window.location.href,
+          phone: payload.telefono_internacional || "",
+          fbp: payload.fbp || "",
+          fbc: payload.fbc || ""
+        }),
+        signal: controller.signal,
+        keepalive: true
+      });
+
+      trackEvent(response.ok ? "meta_capi_success" : "meta_capi_error", {
+        event_name: "Lead",
+        lead_id: assignment.leadId,
+        http_status: response.status
+      });
+      return response.ok;
+    } catch (error) {
+      trackEvent("meta_capi_error", {
+        event_name: "Lead",
+        lead_id: assignment.leadId,
+        error_type: error && error.name === "AbortError" ? "timeout" : "request_failed"
+      });
+      return false;
+    } finally {
+      window.clearTimeout(timeout);
+    }
   }
 
   function encodeFormData(formData) {
@@ -873,7 +979,6 @@
       // This is only a valid attempt; Meta Lead is sent after the form is saved.
       trackEvent("form_submit_attempt", {
         form_name: "leads-parque-auco",
-        objective: getSelectedFormValue(form, "objetivo"),
         utm_source: form.elements.utm_source.value || "",
         utm_campaign: form.elements.utm_campaign.value || ""
       });
@@ -907,7 +1012,6 @@
 
         trackEvent("lead_saved", {
           form_name: "leads-parque-auco",
-          objective: payload.objetivo,
           lead_id: assignment.leadId
         });
 
@@ -920,6 +1024,7 @@
           submissionConfirmed: true
         });
 
+        await sendMetaLeadToServer(payload, assignment);
         window.location.assign("/gracias");
       } catch (error) {
         if (String(error && error.message) === "netlify_submit_failed") {
