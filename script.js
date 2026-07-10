@@ -31,37 +31,6 @@
   const THANK_YOU_MAX_AGE_MS = 10 * 60 * 1000;
   let assignmentInFlight = false;
 
-  const sectorData = {
-    roble: {
-      tag: "Sector Roble",
-      name: "Sombra, amplitud y árboles maduros",
-      description: "Alternativas familiares de 4 y 8 capacidades.",
-      image: "assets/fotos/sector-roble.webp",
-      alt: "Sector Roble con pradera, árboles maduros y una banca"
-    },
-    maiten: {
-      tag: "Sector Maitén",
-      name: "Un entorno abierto y luminoso",
-      description: "Alternativas familiares de 4 y 6 capacidades.",
-      image: "assets/fotos/banca-parque-auco.webp",
-      alt: "Sector Maitén con pradera abierta, árboles y cordillera"
-    },
-    quillay: {
-      tag: "Sector Quillay",
-      name: "Naturaleza y vistas a la cordillera",
-      description: "Alternativas familiares de 2 y 4 capacidades.",
-      image: "assets/fotos/panoramica-parque-auco.webp",
-      alt: "Áreas verdes del parque con vistas a la cordillera"
-    },
-    peumo: {
-      tag: "Sector Peumo",
-      name: "Un paisaje familiar entre árboles",
-      description: "Alternativas familiares de 4 capacidades.",
-      image: "assets/fotos/pradera-parque-auco.webp",
-      alt: "Senderos y vegetación del parque en Sector Peumo"
-    }
-  };
-
   const mapData = {
     atencion: {
       tag: "Punto de atención",
@@ -1098,32 +1067,83 @@
     if (status) status.textContent = "Presiona el bot\u00f3n para enviar tu solicitud al asesor asignado.";
   }
 
-  function setupSectorGallery() {
-    const stage = document.querySelector(".sector-stage");
-    const image = document.querySelector("#sector-image");
-    const tag = document.querySelector("#sector-tag");
-    const name = document.querySelector("#sector-name");
-    const description = document.querySelector("#sector-description");
-    if (!stage || !image) return;
+  function setupStoryCarousel() {
+    const carousel = document.querySelector("[data-story-carousel]");
+    const viewport = carousel?.querySelector("[data-story-viewport]");
+    const slides = Array.from(carousel?.querySelectorAll("[data-story-slide]") || []);
+    const previous = carousel?.querySelector("[data-story-prev]");
+    const next = carousel?.querySelector("[data-story-next]");
+    const current = carousel?.querySelector("[data-story-current]");
+    const progress = carousel?.querySelector("[data-story-progress]");
+    if (!carousel || !viewport || !previous || !next || slides.length === 0) return;
 
-    document.querySelectorAll("[data-sector]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const sector = sectorData[button.dataset.sector];
-        if (!sector) return;
+    let activeIndex = 0;
+    let scrollFrame = 0;
 
-        document.querySelectorAll("[data-sector]").forEach((item) => {
-          item.setAttribute("aria-selected", String(item === button));
+    function updateState(index) {
+      activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => {
+        if (slideIndex === activeIndex) {
+          slide.setAttribute("aria-current", "true");
+        } else {
+          slide.removeAttribute("aria-current");
+        }
+      });
+      previous.disabled = activeIndex === 0;
+      next.disabled = activeIndex === slides.length - 1;
+      if (current) current.textContent = String(activeIndex + 1).padStart(2, "0");
+      if (progress) progress.style.transform = "scaleX(" + ((activeIndex + 1) / slides.length) + ")";
+    }
+
+    function goTo(index) {
+      const targetIndex = Math.max(0, Math.min(index, slides.length - 1));
+      updateState(targetIndex);
+      viewport.scrollTo({
+        left: slides[targetIndex].offsetLeft,
+        behavior: reduceMotion ? "auto" : "smooth"
+      });
+    }
+
+    function syncWithScroll() {
+      const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      slides.forEach((slide, slideIndex) => {
+        const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+        const distance = Math.abs(slideCenter - viewportCenter);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = slideIndex;
+        }
+      });
+      if (closestIndex !== activeIndex) updateState(closestIndex);
+    }
+
+    previous.addEventListener("click", () => goTo(activeIndex - 1));
+    next.addEventListener("click", () => goTo(activeIndex + 1));
+    viewport.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goTo(activeIndex - 1);
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goTo(activeIndex + 1);
+      }
+    });
+    viewport.addEventListener("scroll", () => {
+      window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = window.requestAnimationFrame(syncWithScroll);
+    }, { passive: true });
+    updateState(0);
+  }
+
+  function setupDirectionsTracking() {
+    document.querySelectorAll('[data-event="directions_click"]').forEach((control) => {
+      control.addEventListener("click", () => {
+        trackEvent("directions_click", {
+          placement: control.closest("section")?.id || "header"
         });
-
-        stage.classList.add("is-switching");
-        window.setTimeout(() => {
-          image.src = sector.image;
-          image.alt = sector.alt;
-          tag.textContent = sector.tag;
-          name.textContent = sector.name;
-          description.textContent = sector.description;
-        }, reduceMotion ? 0 : 180);
-        window.setTimeout(() => stage.classList.remove("is-switching"), reduceMotion ? 0 : 420);
       });
     });
   }
@@ -1295,10 +1315,12 @@
       ".capacity-heading > *",
       ".capacity-card",
       ".immediate-steps li",
-      ".sector-heading > *",
-      ".sector-explorer",
+      ".gallery-heading > *",
+      ".story-carousel",
       ".planning-image",
       ".planning-copy > *",
+      ".arrival-media",
+      ".arrival-copy > *",
       ".map-heading > *",
       ".map-viewer",
       ".map-information",
@@ -1395,7 +1417,8 @@
   setupWhatsappCtas();
   setupForm();
   setupThankYouPage();
-  setupSectorGallery();
+  setupStoryCarousel();
+  setupDirectionsTracking();
   setupMap();
   setupMotion();
   setupScrollEffects();

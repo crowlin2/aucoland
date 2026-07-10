@@ -14,7 +14,7 @@
     copy: Object.freeze({
       heroTitle: "Planifica una sepultura familiar con tranquilidad",
       heroLead: "Alternativas familiares perpetuas desde 118 UF, con pie desde el 10% y hasta 72 cuotas.",
-      heroSecondary: "Recibe orientación personalizada y compara ubicaciones antes de decidir."
+      heroSecondary: "En Rinconada de Los Andes, a 45 minutos de Santiago.*"
     })
   });
 })();

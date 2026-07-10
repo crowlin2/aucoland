@@ -131,3 +131,18 @@ test("la versión estática tiene un único propietario del Pixel", () => {
   assert.equal(index.includes('name="fbc"'), true);
   assert.equal(thanks.includes("eventID: leadId"), true);
 });
+
+test("las interacciones de ubicación y galería no se convierten en Lead", () => {
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const trackEventSource = script.slice(
+    script.indexOf("function trackEvent"),
+    script.indexOf("function trackMetaStandardEvent")
+  );
+
+  assert.equal(index.includes('data-event="directions_click"'), true);
+  assert.equal(index.includes('data-event="Lead"'), false);
+  assert.equal(script.includes('trackEvent("directions_click"'), true);
+  assert.equal(trackEventSource.includes('name === "directions_click"'), false);
+  assert.equal(script.includes("setInterval"), false);
+});
