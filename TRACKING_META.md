@@ -34,4 +34,4 @@ Sólo para pruebas:
 5. Revisar Diagnostics y Event Match Quality durante las siguientes 24 horas.
 6. Confirmar en Netlify Forms que se guardaron `fbp`, `fbc`, `fbclid`, `landing_page` y `landing_referrer`.
 
-Nunca guardar el token de Conversions API en `analytics-config.js`, Git o el HTML.
+Nunca guardar el token de Conversions API en archivos del frontend, Git o el HTML.

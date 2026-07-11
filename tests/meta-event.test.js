@@ -150,6 +150,21 @@ test("desactiva eventos automáticos antes de inicializar Meta en todas las pág
   }
 });
 
+test("instala el mismo contenedor de Google Tag Manager en todas las páginas", () => {
+  const pages = [
+    ["inicio", path.join(root, "index.html")],
+    ["gracias", path.join(root, "gracias", "index.html")],
+    ["privacidad", path.join(root, "politica-de-privacidad", "index.html")]
+  ];
+
+  for (const [name, file] of pages) {
+    const html = fs.readFileSync(file, "utf8");
+
+    assert.equal(html.includes("GTM-TRBQ24W8"), true, `${name}: falta el contenedor GTM`);
+    assert.equal((html.match(/googletagmanager\.com\/gtm\.js/g) || []).length, 1, `${name}: el script GTM debe aparecer una vez`);
+    assert.equal((html.match(/googletagmanager\.com\/ns\.html/g) || []).length, 1, `${name}: el fallback GTM debe aparecer una vez`);
+  }
+});
 test("las interacciones de ubicación y galería no se convierten en Lead", () => {
   const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");

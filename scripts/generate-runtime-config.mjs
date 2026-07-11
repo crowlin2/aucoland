@@ -1,4 +1,4 @@
-import { cp, copyFile, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, copyFile, mkdir, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -19,19 +19,6 @@ await cp(
   path.join(projectRoot, "assets"),
   path.join(outputDirectory, "assets"),
   { recursive: true }
-);
-
-const analytics = {
-  gaMeasurementId: process.env.VITE_GA_MEASUREMENT_ID || ""
-};
-
-const analyticsOutput =
-  `window.AUCO_ANALYTICS_CONFIG = Object.freeze(${JSON.stringify(analytics, null, 2)});\n`;
-
-await writeFile(
-  path.join(outputDirectory, "analytics-config.js"),
-  analyticsOutput,
-  "utf8"
 );
 
 console.log("Sitio estático generado en dist/");

@@ -6,7 +6,7 @@
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-W69M8GVF');</script>
+    })(window,document,'script','dataLayer','GTM-TRBQ24W8');</script>
     <!-- End Google Tag Manager -->
     <!-- Meta Pixel Code -->
     <script>
@@ -24,12 +24,10 @@
     window.AUCO_META_PIXEL_BASE_LOADED = true;
     </script>
     <!-- End Meta Pixel Code -->
-    <!-- Event snippet for Enviar formulario de clientes potenciales (3) conversion page -->
     <script>
       (function () {
         var storageKey = "aucoThankYouState";
         var maxAge = 10 * 60 * 1000;
-        var sendTo = "AW-18301399998/5EjcCJWV-sscEL7n5JZE";
 
         try {
           var state = JSON.parse(sessionStorage.getItem(storageKey) || "null");
@@ -37,26 +35,7 @@
           var submittedAt = state && Date.parse(String(state.submittedAt || ""));
           var isRecent = Number.isFinite(submittedAt) && Date.now() - submittedAt >= 0 && Date.now() - submittedAt <= maxAge;
           var isValidLead = /^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(leadId || ""));
-          var conversionKey = "googleAdsPageLoadConversion:" + leadId;
           var metaLeadKey = "metaLeadConversion:" + leadId;
-          var dataLayerKey = "dataLayerLeadConversion:" + leadId;
-
-          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(conversionKey) !== "true") {
-            sessionStorage.setItem(conversionKey, "true");
-            window.dataLayer = window.dataLayer || [];
-            window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-            window.gtag("event", "conversion", { send_to: sendTo });
-          }
-
-          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(dataLayerKey) !== "true") {
-            sessionStorage.setItem(dataLayerKey, "true");
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              event: "lead_conversion_success",
-              lead_id: leadId,
-              form_name: "leads-parque-auco"
-            });
-          }
 
           if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(metaLeadKey) !== "true" && typeof window.fbq === "function") {
             window.fbq("track", "Lead", {
@@ -68,7 +47,7 @@
             sessionStorage.setItem(metaLeadKey, "true");
           }
         } catch (error) {
-          console.error("Google Ads page-load conversion skipped.", error);
+          console.error("Meta lead conversion skipped.", error);
         }
       })();
     </script>
@@ -83,7 +62,7 @@
   </head>
   <body class="thanks-body">
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W69M8GVF"
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRBQ24W8"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <!-- Meta Pixel Code (noscript) -->
@@ -102,7 +81,6 @@
       </section>
     </main>
 
-    <script src="../analytics-config.js"></script>
     <script src="../site-config.js"></script>
     <script src="../script.js"></script>
   </body>

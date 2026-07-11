@@ -14,7 +14,7 @@ El formulario `leads-parque-auco` usa Netlify Forms. Guarda:
 - teléfono o WhatsApp
 - objetivo
 - asesor asignado y código de solicitud
-- UTM, `fbclid` y `gclid`
+- UTM y `fbclid`
 - URL, referrer y fecha de envío
 
 Los leads se revisan en **Netlify > Forms > leads-parque-auco**.
@@ -23,7 +23,7 @@ Los leads se revisan en **Netlify > Forms > leads-parque-auco**.
 
 Tras validar el formulario, el sitio normaliza el teléfono chileno, solicita una única asignación de asesor y envía los datos mediante POST codificado a Netlify Forms. Solo cuando Netlify responde correctamente guarda la continuación en `sessionStorage` y redirige a `/gracias`.
 
-La página `/gracias` valida que la solicitud tenga menos de 10 minutos, registra una sola conversión de Google Ads por `lead_id` y abre el WhatsApp del mismo asesor. Si la apertura automática no funciona, mantiene visible el botón **Continuar a WhatsApp**.
+La página `/gracias` valida que la solicitud tenga menos de 10 minutos, registra una sola conversión de Meta por `lead_id` y abre el WhatsApp del mismo asesor. Si la apertura automática no funciona, mantiene visible el botón **Continuar a WhatsApp**.
 ## Repartición de WhatsApp
 
 La Function `netlify/functions/asignar-lead.js` distribuye solicitudes en orden alternado:
@@ -82,12 +82,7 @@ Eventos de embudo:
 
 Para Meta, la conversion de formulario debe configurarse como el evento estandar `Lead`, no como click en boton ni como `form_submit_attempt`. El click en el boton solo indica intencion; el lead existe cuando el POST fue confirmado y se carga `/gracias` con una solicitud reciente.
 
-La configuración opcional existente sigue usando:
-
-- `VITE_GA_MEASUREMENT_ID`
-- `VITE_META_PIXEL_ID`
-
-Estos identificadores analíticos sí son públicos por naturaleza. Los números de WhatsApp no forman parte de esa configuración.
+La configuración de Meta se documenta en `TRACKING_META.md`. El ID del Pixel es público por naturaleza; el token de Conversions API y los números de WhatsApp no forman parte de la configuración pública.
 
 ## Instalación y validación
 

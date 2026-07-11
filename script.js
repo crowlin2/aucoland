@@ -8,7 +8,6 @@
     agreementDiscountPercent: 15,
     agreements: []
   };
-  const analyticsConfig = window.AUCO_ANALYTICS_CONFIG || {};
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const trackingKeys = [
     "utm_source",
@@ -17,7 +16,6 @@
     "utm_content",
     "utm_term",
     "fbclid",
-    "gclid",
     "fbp",
     "fbc"
   ];
@@ -70,34 +68,8 @@
     }
   };
 
-  function injectScript(src, id) {
-    if (id && document.getElementById(id)) return;
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = src;
-    if (id) script.id = id;
-    document.head.appendChild(script);
-  }
-
-  function initializeAnalytics() {
-    const gaId = String(analyticsConfig.gaMeasurementId || "").trim();
-
-    window.dataLayer = window.dataLayer || [];
-
-    if (gaId) {
-      injectScript("https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(gaId), "auco-ga");
-      window.gtag = window.gtag || function () {
-        window.dataLayer.push(arguments);
-      };
-      window.gtag("js", new Date());
-      window.gtag("config", gaId, { send_page_view: false });
-    }
-  }
-
   function trackEvent(name, parameters) {
     const safeParameters = parameters || {};
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(Object.assign({ event: name }, safeParameters));
 
     if (typeof window.fbq !== "function") return;
 
@@ -1409,7 +1381,6 @@
     });
   }
 
-  initializeAnalytics();
   applyCommercialConfig();
   setupTicker();
   setupLeadFormModal();
