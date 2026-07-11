@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 import {
   buildMetaEvent,
@@ -164,6 +165,64 @@ test("instala el mismo contenedor de Google Tag Manager en todas las páginas", 
     assert.equal((html.match(/googletagmanager\.com\/gtm\.js/g) || []).length, 1, `${name}: el script GTM debe aparecer una vez`);
     assert.equal((html.match(/googletagmanager\.com\/ns\.html/g) || []).length, 1, `${name}: el fallback GTM debe aparecer una vez`);
   }
+});
+test("envía a GTM un único lead confirmado con valor e ID de transacción", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const thanks = fs.readFileSync(path.join(root, "gracias", "index.html"), "utf8");
+  const pushIndex = thanks.indexOf('window.dataLayer.push({');
+
+  assert.equal(thanks.includes('var gtmLeadKey = "gtmLeadConversion:" + leadId'), true);
+  assert.equal(thanks.includes('state.submissionConfirmed === true && isValidLead && isRecent'), true);
+  assert.equal(pushIndex >= 0, true);
+  assert.equal(thanks.indexOf('event: "lead_saved"', pushIndex) > pushIndex, true);
+  assert.equal(thanks.indexOf('transaction_id: leadId', pushIndex) > pushIndex, true);
+  assert.equal(thanks.indexOf('value: 1', pushIndex) > pushIndex, true);
+  assert.equal(thanks.indexOf('currency: "CLP"', pushIndex) > pushIndex, true);
+  assert.equal(thanks.includes("AW-18316280296"), false);
+  assert.equal(thanks.includes("gBDECM-y6s4cEOiD8Z1E"), false);
+  assert.equal(index.includes('event: "lead_saved"'), false);
+});
+test("deduplica el evento lead_saved al ejecutar dos veces la confirmación", () => {
+  const thanks = fs.readFileSync(path.join(root, "gracias", "index.html"), "utf8");
+  const conversionScript = [...thanks.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map((match) => match[1])
+    .find((source) => source.includes('var storageKey = "aucoThankYouState"'));
+  const leadId = "AUCO-20260711-ABC123";
+  const storage = new Map([
+    ["aucoThankYouState", JSON.stringify({
+      leadId,
+      submittedAt: new Date().toISOString(),
+      submissionConfirmed: true
+    })]
+  ]);
+  const metaCalls = [];
+  const context = {
+    Date,
+    JSON,
+    Number,
+    String,
+    console,
+    sessionStorage: {
+      getItem: (key) => storage.get(key) || null,
+      setItem: (key, value) => storage.set(key, value)
+    },
+    window: {
+      dataLayer: [],
+      fbq: (...args) => metaCalls.push(args)
+    }
+  };
+
+  assert.equal(typeof conversionScript, "string");
+  vm.runInNewContext(conversionScript, context);
+  vm.runInNewContext(conversionScript, context);
+
+  const leadEvents = context.window.dataLayer.filter((item) => item.event === "lead_saved");
+  assert.equal(leadEvents.length, 1);
+  assert.equal(leadEvents[0].lead_id, leadId);
+  assert.equal(leadEvents[0].transaction_id, leadId);
+  assert.equal(leadEvents[0].value, 1);
+  assert.equal(leadEvents[0].currency, "CLP");
+  assert.equal(metaCalls.filter((args) => args[0] === "track" && args[1] === "Lead").length, 1);
 });
 test("las interacciones de ubicación y galería no se convierten en Lead", () => {
   const script = fs.readFileSync(path.join(root, "script.js"), "utf8");

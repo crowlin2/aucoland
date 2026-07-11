@@ -35,8 +35,21 @@
           var submittedAt = state && Date.parse(String(state.submittedAt || ""));
           var isRecent = Number.isFinite(submittedAt) && Date.now() - submittedAt >= 0 && Date.now() - submittedAt <= maxAge;
           var isValidLead = /^AUCO-\d{8}-[A-F0-9]{6}$/.test(String(leadId || ""));
+          var gtmLeadKey = "gtmLeadConversion:" + leadId;
           var metaLeadKey = "metaLeadConversion:" + leadId;
 
+          if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(gtmLeadKey) !== "true") {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: "lead_saved",
+              lead_id: leadId,
+              transaction_id: leadId,
+              form_name: "leads-parque-auco",
+              value: 1,
+              currency: "CLP"
+            });
+            sessionStorage.setItem(gtmLeadKey, "true");
+          }
           if (state && state.submissionConfirmed === true && isValidLead && isRecent && sessionStorage.getItem(metaLeadKey) !== "true" && typeof window.fbq === "function") {
             window.fbq("track", "Lead", {
               content_name: "leads-parque-auco",
