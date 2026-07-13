@@ -536,6 +536,9 @@
 
 
 
+    if (payload.alternativa_interes) {
+      parts.push("Quiero conocer la alternativa " + cleanSentenceValue(payload.alternativa_interes) + ".");
+    }
     parts.push("Llegue desde aucofamilia.com.");
     parts.push("");
     parts.push("Codigo de solicitud: " + assignment.leadId);
@@ -678,6 +681,13 @@
         trackEvent("capacity_interest", {
           capacity: Number(control.dataset.capacityOption)
         });
+      });
+    });
+    document.querySelectorAll("[data-space-option]").forEach((control) => {
+      control.addEventListener("click", () => {
+        if (form && control.dataset.spaceOption) {
+          selectFormValue(form, "alternativa_interes", control.dataset.spaceOption);
+        }
       });
     });
   }
