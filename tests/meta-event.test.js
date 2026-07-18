@@ -238,3 +238,19 @@ test("las interacciones de ubicación y galería no se convierten en Lead", () =
   assert.equal(trackEventSource.includes('name === "directions_click"'), false);
   assert.equal(script.includes("setInterval"), false);
 });
+test("publica 60 cuotas sin interés sin conservar la promoción anterior", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const config = fs.readFileSync(path.join(root, "site-config.js"), "utf8");
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+  const sources = [index, config, script];
+
+  assert.equal(config.includes("installments: 60"), true);
+  assert.equal(config.includes("60 cuotas sin interés"), true);
+  assert.equal(index.includes("60 cuotas sin interés"), true);
+  assert.equal(script.includes('installments: config.installments + " cuotas sin interés"'), true);
+
+  for (const source of sources) {
+    assert.equal(source.includes("72 cuotas"), false);
+    assert.equal(source.toLowerCase().includes("hasta 60"), false);
+  }
+});

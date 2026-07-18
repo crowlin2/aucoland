@@ -4,7 +4,7 @@
   const config = window.AUCO_CONFIG || {
     priceUF: 118,
     downPaymentPercent: 10,
-    installments: 72,
+    installments: 60,
     agreementDiscountPercent: 15,
     agreements: []
   };
@@ -339,7 +339,7 @@
     const labels = {
       price: "Desde " + config.priceUF + " UF",
       "down-payment": "Pie desde " + config.downPaymentPercent + "%",
-      installments: "Hasta " + config.installments + " cuotas",
+      installments: config.installments + " cuotas sin interés",
       agreement: "Convenios con " + config.agreementDiscountPercent + "% de descuento"
     };
     const values = {
@@ -348,7 +348,7 @@
       "down-payment": labels["down-payment"],
       "down-payment-plain": config.downPaymentPercent + "% de pie",
       installments: labels.installments,
-      "installments-plain": config.installments + " cuotas",
+      "installments-plain": config.installments + " cuotas sin interés",
       "finance-combined": labels["down-payment"] + " y " + labels.installments.toLowerCase(),
       "agreement-heading": labels.agreement
     };
@@ -393,8 +393,8 @@
       description.content =
         "Sepulturas familiares perpetuas desde " + config.priceUF +
         " UF en Parque de Auco. Alternativas de 2 a 8 capacidades, pie desde " +
-        config.downPaymentPercent + "% y hasta " + config.installments +
-        " cuotas. Agenda una visita.";
+        config.downPaymentPercent + "% y " + config.installments +
+        " cuotas sin interés. Agenda una visita.";
     }
   }
 
