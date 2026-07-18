@@ -1485,37 +1485,11 @@ textarea { resize: vertical; }
   box-shadow: 0 10px 32px rgba(16, 47, 41, 0.1);
 }
 
-.hero-image {
-  transform-origin: 62% 48%;
-  animation: hero-cinematic 18s ease-out both;
-}
-
-.hero-copy .eyebrow { animation: hero-reveal 700ms 120ms both; }
-.hero-copy h1 { animation: hero-reveal 780ms 220ms both; }
-.hero-lead { animation: hero-reveal 760ms 330ms both; }
-.hero-actions { animation: hero-reveal 720ms 430ms both; }
-.hero-facts { animation: hero-reveal 720ms 540ms both; }
 .quick-form { animation: form-reveal 820ms 420ms both; }
-.hero-scroll { animation: scroll-hint 1800ms 1200ms ease-in-out infinite; }
-
-@keyframes hero-cinematic {
-  from { transform: scale(1.03); }
-  to { transform: scale(1.1); }
-}
-
-@keyframes hero-reveal {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 @keyframes form-reveal {
   from { opacity: 0; transform: translateY(28px) scale(0.985); }
   to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes scroll-hint {
-  0%, 100% { transform: translateY(0); opacity: 0.65; }
-  50% { transform: translateY(5px); opacity: 1; }
 }
 
 .reveal-target {

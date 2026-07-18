@@ -255,3 +255,13 @@ test("publica 60 cuotas sin interés sin conservar la promoción anterior", () =
     assert.equal(source.toLowerCase().includes("hasta 60"), false);
   }
 });
+test("muestra el hero de inmediato y conserva el movimiento del resto del sitio", () => {
+  const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+
+  assert.equal(styles.includes("animation: hero-cinematic"), false);
+  assert.equal(styles.includes("animation: hero-reveal"), false);
+  assert.equal(styles.includes(".hero-scroll { animation:"), false);
+  assert.equal(styles.includes(".reveal-target {"), true);
+  assert.equal(script.includes('".full-form"'), true);
+});
