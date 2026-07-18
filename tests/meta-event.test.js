@@ -248,6 +248,7 @@ test("publica 60 cuotas sin interés sin conservar la promoción anterior", () =
   assert.equal(config.includes("60 cuotas sin interés"), true);
   assert.equal(index.includes("60 cuotas sin interés"), true);
   assert.equal(script.includes('installments: config.installments + " cuotas sin interés"'), true);
+  assert.equal(index.includes("Sujeto a condiciones"), false);
 
   for (const source of sources) {
     assert.equal(source.includes("72 cuotas"), false);
