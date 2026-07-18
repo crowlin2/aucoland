@@ -398,20 +398,6 @@
     }
   }
 
-  function setupTicker() {
-    const ticker = document.querySelector(".assurance-ticker");
-    const toggle = document.querySelector(".assurance-ticker-toggle");
-    if (!ticker || !toggle) return;
-
-    toggle.addEventListener("click", () => {
-      const paused = ticker.classList.toggle("is-paused");
-      toggle.setAttribute("aria-pressed", String(paused));
-      toggle.setAttribute("aria-label", paused ? "Reanudar cinta" : "Pausar cinta");
-      toggle.title = paused ? "Reanudar movimiento" : "Pausar movimiento";
-      toggle.querySelector("span").textContent = paused ? "▶" : "Ⅱ";
-    });
-  }
-
   function setControlBusy(control, busy, busyText) {
     if (!control) return;
     const label = control.querySelector("[data-button-label]") || control;
@@ -1392,7 +1378,6 @@
   }
 
   applyCommercialConfig();
-  setupTicker();
   setupLeadFormModal();
   setupLeadIntent();
   setupWhatsappCtas();
