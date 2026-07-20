@@ -361,6 +361,11 @@ test("el formulario visible solicita solamente nombre y teléfono", () => {
     { element: "input", name: "nombre" },
     { element: "input", name: "telefono_nacional" }
   ]);
+  assert.equal(form.includes("<label>Teléfono"), true);
+  assert.equal(form.includes("<label>WhatsApp"), false);
+  const submitButton = form.match(/<button[^>]+form-submit-whatsapp[^>]*>[\s\S]*?<\/button>/)?.[0] || "";
+  assert.equal(submitButton.includes("<img"), false);
+  assert.equal(submitButton.includes("Recibir informaci&oacute;n"), true);
   assert.equal(form.includes('name="objetivo"'), false);
   assert.equal(script.includes("payload.objetivo"), false);
   assert.equal(script.includes('selectFormValue(form, "objetivo"'), false);
