@@ -314,3 +314,16 @@ test("el formulario visible solicita solamente nombre y teléfono", () => {
   assert.equal(script.includes("payload.objetivo"), false);
   assert.equal(script.includes('selectFormValue(form, "objetivo"'), false);
 });
+
+test("todos los contactos usan el mensaje breve de WhatsApp", () => {
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+  const message = "Hola, vengo desde aucofamilia.com y quiero recibir información sobre sepulturas en Parque de Auco.";
+
+  assert.equal(script.includes(`const WHATSAPP_CONTACT_MESSAGE = "${message}";`), true);
+  assert.equal(script.match(/buildWhatsappMessage\(\)/g)?.length, 3);
+  assert.equal(script.includes("buildGenericWhatsappMessage"), false);
+  assert.equal(script.includes("buildFormWhatsappMessage"), false);
+  assert.equal(script.includes('"Código de solicitud: " + assignment.leadId'), false);
+  assert.equal(script.includes('"Codigo de solicitud: " + assignment.leadId'), false);
+  assert.equal(script.includes('"Asesor asignado: " + assignment.agentName'), false);
+});

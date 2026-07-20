@@ -496,35 +496,10 @@
     }
   }
 
-  function buildGenericWhatsappMessage(assignment) {
-    return [
-      "Hola, vengo desde aucofamilia.com y quiero recibir información sobre sepulturas en Parque de Auco.",
-      "",
-      "Código de solicitud: " + assignment.leadId,
-      "Asesor asignado: " + assignment.agentName,
-      "Origen: aucofamilia.com"
-    ].join("\n");
-  }
+  const WHATSAPP_CONTACT_MESSAGE = "Hola, vengo desde aucofamilia.com y quiero recibir información sobre sepulturas en Parque de Auco.";
 
-  function cleanSentenceValue(value) {
-    return String(value || "").trim().replace(/[.。]+$/, "");
-  }
-
-  function buildFormWhatsappMessage(payload, assignment) {
-    const parts = [
-      "Hola, soy " + cleanSentenceValue(payload.nombre) + "."
-    ];
-
-    if (payload.alternativa_interes) {
-      parts.push("Quiero conocer la alternativa " + cleanSentenceValue(payload.alternativa_interes) + ".");
-    }
-    parts.push("Llegue desde aucofamilia.com.");
-    parts.push("");
-    parts.push("Codigo de solicitud: " + assignment.leadId);
-    parts.push("Asesor asignado: " + assignment.agentName);
-    parts.push("Origen: aucofamilia.com");
-
-    return parts.join("\n");
+  function buildWhatsappMessage() {
+    return WHATSAPP_CONTACT_MESSAGE;
   }
 
   function openAssignedWhatsapp(assignment, message, pendingWindow, contactSource, formType) {
@@ -668,7 +643,7 @@
 
         try {
           const assignment = await requestWhatsappAssignment(contactSource, formType);
-          const message = buildGenericWhatsappMessage(assignment);
+          const message = buildWhatsappMessage();
           openAssignedWhatsapp(assignment, message, pendingWindow, contactSource, formType);
         } catch (error) {
           if (pendingWindow && !pendingWindow.closed) pendingWindow.close();
@@ -910,7 +885,7 @@
         form.elements.lead_id.value = assignment.leadId;
 
         const payload = Object.fromEntries(new FormData(form).entries());
-        const message = buildFormWhatsappMessage(payload, assignment);
+        const message = buildWhatsappMessage();
         const whatsappUrl = assignment.whatsappUrl + "?text=" + encodeURIComponent(message);
         const response = await fetch(form.action || "/", {
           method: "POST",
