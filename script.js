@@ -34,21 +34,21 @@
       tag: "Punto de atención",
       title: "Atención Comercial",
       description: "Punto de orientación y coordinación de visitas.",
-      image: "assets/fotos/instalaciones-aereas-auco.webp",
+      image: "assets/fotos/instalaciones-aereas-auco-640.webp",
       imageAlt: "Vista aérea de las instalaciones de Parque de Auco"
     },
     capilla: {
       tag: "Punto del parque",
       title: "Capilla",
       description: "Ubicación de la capilla dentro del parque.",
-      image: "assets/fotos/capilla-auco-mejorada.webp",
+      image: "assets/fotos/capilla-auco-mejorada-640.webp",
       imageAlt: "Exterior de la Capilla de Parque de Auco"
     },
     santuario: {
       tag: "Referencia cercana",
       title: "Santuario Santa Teresita de Los Andes",
       description: "Punto de referencia cercano al parque.",
-      image: "assets/fotos/santuario-santa-teresita.webp",
+      image: "assets/fotos/santuario-santa-teresita-556.webp",
       imageAlt: "Fachada principal del Santuario Santa Teresita de Los Andes"
     },
     anforas: {
@@ -993,9 +993,29 @@
     let activeIndex = 0;
     let rotationTimer = 0;
 
-    function showNextSlide() {
+    function loadSlide(slide) {
+      if (!slide || slide.dataset.loaded === "true") return Promise.resolve();
+      const source = slide.dataset.src;
+      if (!source) return Promise.resolve();
+
+      slide.dataset.loaded = "true";
+      return new Promise((resolve) => {
+        const finish = () => resolve();
+        slide.addEventListener("load", finish, { once: true });
+        slide.addEventListener("error", finish, { once: true });
+        if (slide.dataset.srcset) slide.srcset = slide.dataset.srcset;
+        if (slide.dataset.sizes) slide.sizes = slide.dataset.sizes;
+        slide.src = source;
+        if (slide.complete) resolve();
+      });
+    }
+
+    async function showNextSlide() {
+      const nextIndex = (activeIndex + 1) % slides.length;
+      await loadSlide(slides[nextIndex]);
+      if (document.hidden) return;
       slides[activeIndex].classList.remove("is-active");
-      activeIndex = (activeIndex + 1) % slides.length;
+      activeIndex = nextIndex;
       slides[activeIndex].classList.add("is-active");
       rotationTimer = window.setTimeout(showNextSlide, 6500);
     }

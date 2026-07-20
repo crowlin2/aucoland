@@ -287,7 +287,8 @@ test("rota fondos cálidos del hero comenzando por Jardines de Auco", () => {
   const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
   const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
 
-  assert.equal(index.includes('href="assets/fotos/jardines-de-auco-premium.webp" fetchpriority="high"'), true);
+  assert.equal(index.includes('href="assets/fotos/jardines-de-auco-premium-1280.webp"'), true);
+  assert.equal(index.includes('imagesrcset="assets/fotos/jardines-de-auco-premium-640.webp 640w, assets/fotos/jardines-de-auco-premium-1280.webp 1280w"'), true);
   assert.equal(index.includes('class="hero-image hero-slide is-active"'), true);
   assert.equal(index.match(/data-hero-slide/g)?.length, 3);
   assert.equal(script.includes("function setupHeroCarousel()"), true);
@@ -295,6 +296,56 @@ test("rota fondos cálidos del hero comenzando por Jardines de Auco", () => {
   assert.equal(styles.includes(".hero-slide.is-active"), true);
 });
 
+test("optimiza la carga inicial sin descargar por adelantado todo el carrusel", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+
+  assert.equal(index.includes("fonts.googleapis.com"), false);
+  assert.equal(index.includes('href="assets/fonts/inter-latin.woff2"'), true);
+  assert.equal(index.includes('href="assets/fonts/lora-latin.woff2"'), true);
+  assert.equal(styles.includes("@font-face"), true);
+  assert.equal(styles.includes("font-display: swap"), true);
+  assert.equal(index.includes('data-src="assets/fotos/pradera-auco-atardecer-1280.webp"'), true);
+  assert.equal(index.includes('data-src="assets/fotos/instalaciones-auco-atardecer-1280.webp"'), true);
+  assert.equal(script.includes("function loadSlide(slide)"), true);
+  assert.equal(script.includes("slide.src = source"), true);
+});
+
+test("usa imagenes responsivas con dimensiones y archivos optimizados", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const expectedAssets = [
+    "assets/fotos/jardines-de-auco-premium-640.webp",
+    "assets/fotos/jardines-de-auco-premium-1280.webp",
+    "assets/fotos/fuente-de-auco-premium-640.webp",
+    "assets/fotos/fuente-de-auco-premium-1280.webp",
+    "assets/mapa/mapa-parque-auco-ilustrado-640.webp",
+    "assets/mapa/mapa-parque-auco-ilustrado-1280.webp",
+    "assets/iconos/whatsapp-64.webp"
+  ];
+
+  for (const asset of expectedAssets) {
+    assert.equal(fs.existsSync(path.join(root, asset)), true, `${asset} debe existir`);
+  }
+  assert.equal(index.includes('srcset="assets/fotos/jardines-de-auco-premium-640.webp 640w'), true);
+  assert.equal(index.includes('width="1499" height="1049" alt="Mapa ilustrado'), true);
+  assert.equal(index.includes('src="assets/iconos/whatsapp-64.webp" width="64" height="64"'), true);
+  assert.ok(fs.statSync(path.join(root, "assets/fotos/jardines-de-auco-premium-640.webp")).size < fs.statSync(path.join(root, "assets/fotos/jardines-de-auco-premium.webp")).size);
+});
+
+test("mantiene conversiones en cola y difiere solo la red publicitaria inicial", () => {
+  const pages = ["index.html", "gracias/index.html", "politica-de-privacidad/index.html"];
+  for (const page of pages) {
+    const html = fs.readFileSync(path.join(root, page), "utf8");
+    assert.equal(html.includes("function loadMarketingTags()"), true, page);
+    assert.equal(html.indexOf("fbq('set', 'autoConfig', false") < html.indexOf("fbq('init'"), true, page);
+    assert.equal(html.indexOf("fbq('track', 'PageView')") < html.indexOf("function loadMarketingTags()"), true, page);
+    assert.equal(html.includes("w.dataLayer.push({'gtm.start'"), true, page);
+  }
+  const thanks = fs.readFileSync(path.join(root, "gracias/index.html"), "utf8");
+  assert.equal(thanks.includes("if(w.location.pathname.indexOf('/gracias')!==-1)"), true);
+  assert.equal(thanks.includes("loadMarketingTags();"), true);
+});
 test("el formulario visible solicita solamente nombre y teléfono", () => {
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const script = fs.readFileSync(path.join(root, "script.js"), "utf8");

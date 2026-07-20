@@ -1,29 +1,47 @@
 <!doctype html>
 <html lang="es-CL">
   <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TRBQQ4W8');</script>
-    <!-- End Google Tag Manager -->
-    <!-- Meta Pixel Code -->
+    <!-- Marketing tags: events queue immediately; third-party scripts load after interaction -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('set', 'autoConfig', false, '1004828548959223');
-    fbq('init', '1004828548959223');
-    fbq('track', 'PageView');
-    window.AUCO_META_PIXEL_BASE_LOADED = true;
+    (function(w,d){
+      w.dataLayer=w.dataLayer||[];
+      w.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+      if(!w.fbq){var n=w.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!w._fbq)w._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}
+      fbq('set', 'autoConfig', false, '1004828548959223');
+      fbq('init', '1004828548959223');
+      fbq('track', 'PageView');
+      w.AUCO_META_PIXEL_BASE_LOADED = true;
+
+      var loaded=false;
+      var fallbackTimer=0;
+      function loadMarketingTags(){
+        if(loaded)return;
+        loaded=true;
+        w.clearTimeout(fallbackTimer);
+        var g=d.createElement('script');
+        g.async=true;
+        g.src='https://www.googletagmanager.com/gtm.js?id=GTM-TRBQQ4W8';
+        d.head.appendChild(g);
+        var m=d.createElement('script');
+        m.async=true;
+        m.src='https://connect.facebook.net/en_US/fbevents.js';
+        d.head.appendChild(m);
+      }
+      w.AUCO_LOAD_MARKETING_TAGS=loadMarketingTags;
+      if(w.location.pathname.indexOf('/gracias')!==-1){
+        loadMarketingTags();
+      }else{
+        ['pointerdown','keydown','scroll'].forEach(function(eventName){
+          w.addEventListener(eventName,loadMarketingTags,{once:true,passive:true});
+        });
+        w.addEventListener('load',function(){
+          fallbackTimer=w.setTimeout(loadMarketingTags,4500);
+        },{once:true});
+      }
+    })(window,document);
     </script>
-    <!-- End Meta Pixel Code -->
+    <!-- End marketing tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sepulturas familiares desde 118 UF | Parque de Auco</title>
@@ -32,10 +50,9 @@
     <meta property="og:description" content="Conoce Parque de Auco en Rinconada de Los Andes, junto al Santuario de Santa Teresa. Alternativas familiares perpetuas desde 118 UF y 60 cuotas sin interés.">
     <meta property="og:type" content="website">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Lora:wght@500;600&amp;display=swap" rel="stylesheet">
-    <link rel="preload" as="image" href="assets/fotos/jardines-de-auco-premium.webp" fetchpriority="high">
+    <link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/lora-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" as="image" href="assets/fotos/jardines-de-auco-premium-1280.webp" imagesrcset="assets/fotos/jardines-de-auco-premium-640.webp 640w, assets/fotos/jardines-de-auco-premium-1280.webp 1280w" imagesizes="100vw" fetchpriority="high">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -66,9 +83,9 @@
     <main id="inicio">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-carousel" data-hero-carousel aria-label="Vistas de Parque de Auco al atardecer">
-          <img class="hero-image hero-slide is-active" src="assets/fotos/jardines-de-auco-premium.webp" alt="Jardín familiar de Parque de Auco rodeado de vegetación en una tarde cálida" fetchpriority="high" decoding="async" data-hero-slide>
-          <img class="hero-image hero-slide" src="assets/fotos/pradera-auco-atardecer.webp" alt="" loading="lazy" decoding="async" fetchpriority="low" aria-hidden="true" data-hero-slide>
-          <img class="hero-image hero-slide" src="assets/fotos/instalaciones-auco-atardecer.webp" alt="" loading="lazy" decoding="async" fetchpriority="low" aria-hidden="true" data-hero-slide>
+          <img class="hero-image hero-slide is-active" src="assets/fotos/jardines-de-auco-premium-1280.webp" srcset="assets/fotos/jardines-de-auco-premium-640.webp 640w, assets/fotos/jardines-de-auco-premium-1280.webp 1280w" sizes="100vw" width="1536" height="1024" alt="Jardín familiar de Parque de Auco rodeado de vegetación en una tarde cálida" fetchpriority="high" decoding="async" data-hero-slide data-loaded="true">
+          <img class="hero-image hero-slide" data-src="assets/fotos/pradera-auco-atardecer-1280.webp" data-srcset="assets/fotos/pradera-auco-atardecer-640.webp 640w, assets/fotos/pradera-auco-atardecer-1280.webp 1280w" data-sizes="100vw" width="1448" height="814" alt="" decoding="async" aria-hidden="true" data-hero-slide>
+          <img class="hero-image hero-slide" data-src="assets/fotos/instalaciones-auco-atardecer-1280.webp" data-srcset="assets/fotos/instalaciones-auco-atardecer-640.webp 640w, assets/fotos/instalaciones-auco-atardecer-1280.webp 1280w" data-sizes="100vw" width="1673" height="941" alt="" decoding="async" aria-hidden="true" data-hero-slide>
         </div>
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="hero-content hero-single">
@@ -98,7 +115,7 @@
           <h2 id="contact-title">Recibe orientación personalizada</h2>
           <p>Déjanos tus datos y te asesoraremos.</p>
           <figure class="contact-location-media">
-            <img src="assets/fotos/acceso-parque-auco.webp" alt="Acceso principal de Parque de Auco" loading="lazy" decoding="async">
+            <img src="assets/fotos/acceso-parque-auco-640.webp" srcset="assets/fotos/acceso-parque-auco-640.webp 640w, assets/fotos/acceso-parque-auco-1280.webp 1280w" sizes="(max-width: 699px) 100vw, 42vw" width="1672" height="940" alt="Acceso principal de Parque de Auco" loading="lazy" decoding="async">
             <figcaption>Parque de Auco, Rinconada de Los Andes</figcaption>
           </figure>
         </div>
@@ -129,7 +146,7 @@
               <span class="field-error" data-field-error-for="telefono_nacional" aria-live="polite"></span>
             </label>
           </div>
-          <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true"><span data-button-label>Recibir informaci&oacute;n</span></button>
+          <button class="button button-primary button-full whatsapp-action form-submit-whatsapp" type="submit"><img src="assets/iconos/whatsapp-64.webp" width="64" height="64" alt="" aria-hidden="true"><span data-button-label>Recibir informaci&oacute;n</span></button>
           <div class="form-trust" aria-label="Condiciones de contacto">
             <span>Sin compromiso</span>
             <span>Respuesta por WhatsApp</span>
@@ -172,7 +189,7 @@
           <div class="premium-spaces-grid" role="region" aria-label="Alternativas especiales" tabindex="0">
             <article class="premium-space-card">
               <figure class="premium-space-media">
-                <img src="assets/fotos/jardines-de-auco-premium.webp" alt="Representación referencial de Jardines de Auco con cierre vegetal, acceso independiente y banca familiar" loading="lazy" decoding="async">
+                <img src="assets/fotos/jardines-de-auco-premium-640.webp" srcset="assets/fotos/jardines-de-auco-premium-640.webp 640w, assets/fotos/jardines-de-auco-premium-1280.webp 1280w" sizes="(max-width: 699px) 86vw, 50vw" width="1536" height="1024" alt="Representación referencial de Jardines de Auco con cierre vegetal, acceso independiente y banca familiar" loading="lazy" decoding="async">
                 <figcaption>Imagen referencial</figcaption>
               </figure>
               <div class="premium-space-copy">
@@ -191,7 +208,7 @@
 
             <article class="premium-space-card">
               <figure class="premium-space-media">
-                <img src="assets/fotos/fuente-de-auco-premium.webp" alt="Representación referencial de Fuente de Auco con senderos laterales, vegetación y fuente de agua" loading="lazy" decoding="async">
+                <img src="assets/fotos/fuente-de-auco-premium-640.webp" srcset="assets/fotos/fuente-de-auco-premium-640.webp 640w, assets/fotos/fuente-de-auco-premium-1280.webp 1280w" sizes="(max-width: 699px) 86vw, 50vw" width="1681" height="936" alt="Representación referencial de Fuente de Auco con senderos laterales, vegetación y fuente de agua" loading="lazy" decoding="async">
                 <figcaption>Imagen referencial</figcaption>
               </figure>
               <div class="premium-space-copy">
@@ -254,23 +271,23 @@
           <div class="story-carousel-viewport" data-story-viewport tabindex="0" aria-label="Recorrido visual por Parque de Auco">
             <div class="story-carousel-track">
               <article class="story-slide" data-story-slide aria-current="true" aria-label="1 de 5: Acceso principal">
-                <img src="assets/fotos/acceso-auco-atardecer.webp" alt="Acceso principal de Parque de Auco junto a Carretera San Martín al atardecer" loading="lazy" decoding="async">
+                <img src="assets/fotos/acceso-auco-atardecer-640.webp" srcset="assets/fotos/acceso-auco-atardecer-640.webp 640w, assets/fotos/acceso-auco-atardecer-1280.webp 1280w" sizes="(max-width: 699px) 88vw, 72vw" width="1673" height="941" alt="Acceso principal de Parque de Auco junto a Carretera San Martín al atardecer" loading="lazy" decoding="async">
                 <div class="story-slide-copy"><p>Acceso principal</p><h3>Llegar es simple</h3><span>Carretera San Martín 7000, Rinconada de Los Andes.</span></div>
               </article>
               <article class="story-slide" data-story-slide aria-label="2 de 5: Capilla del parque">
-                <img src="assets/fotos/capilla-auco-atardecer.webp" alt="Capilla de Parque de Auco entre árboles y muros de piedra al atardecer" loading="lazy" decoding="async">
+                <img src="assets/fotos/capilla-auco-atardecer-640.webp" srcset="assets/fotos/capilla-auco-atardecer-640.webp 640w, assets/fotos/capilla-auco-atardecer-1280.webp 1280w" sizes="(max-width: 699px) 88vw, 72vw" width="1673" height="941" alt="Capilla de Parque de Auco entre árboles y muros de piedra al atardecer" loading="lazy" decoding="async">
                 <div class="story-slide-copy"><p>Capilla del parque</p><h3>Un espacio de recogimiento</h3><span>Arquitectura integrada al paisaje y a la vegetación del valle.</span></div>
               </article>
               <article class="story-slide" data-story-slide aria-label="3 de 5: Entorno natural">
-                <img src="assets/fotos/valle-auco-atardecer.webp" alt="Banca bajo árboles con vista al parque y la cordillera al atardecer" loading="lazy" decoding="async">
+                <img src="assets/fotos/valle-auco-atardecer-640.webp" srcset="assets/fotos/valle-auco-atardecer-640.webp 640w, assets/fotos/valle-auco-atardecer-1280.webp 1280w" sizes="(max-width: 699px) 88vw, 72vw" width="1539" height="866" alt="Banca bajo árboles con vista al parque y la cordillera al atardecer" loading="lazy" decoding="async">
                 <div class="story-slide-copy"><p>Entorno natural</p><h3>Calma con vista a la cordillera</h3><span>Senderos y áreas de descanso para recorrer el parque con tiempo.</span></div>
               </article>
               <article class="story-slide" data-story-slide aria-label="4 de 5: Sectores familiares">
-                <img src="assets/fotos/pradera-auco-atardecer.webp" alt="Pradera arbolada de Parque de Auco con sectores familiares" loading="lazy" decoding="async">
+                <img src="assets/fotos/pradera-auco-atardecer-640.webp" srcset="assets/fotos/pradera-auco-atardecer-640.webp 640w, assets/fotos/pradera-auco-atardecer-1280.webp 1280w" sizes="(max-width: 699px) 88vw, 72vw" width="1448" height="814" alt="Pradera arbolada de Parque de Auco con sectores familiares" loading="lazy" decoding="async">
                 <div class="story-slide-copy"><p>Sectores familiares</p><h3>Espacios amplios y cuidados</h3><span>Roble, Maitén, Quillay y Peumo, sujetos a disponibilidad.</span></div>
               </article>
               <article class="story-slide story-slide-cta" data-story-slide aria-label="5 de 5: Agenda una visita">
-                <img src="assets/fotos/instalaciones-auco-atardecer.webp" alt="Vista aérea de las instalaciones de Parque de Auco al atardecer" loading="lazy" decoding="async">
+                <img src="assets/fotos/instalaciones-auco-atardecer-640.webp" srcset="assets/fotos/instalaciones-auco-atardecer-640.webp 640w, assets/fotos/instalaciones-auco-atardecer-1280.webp 1280w" sizes="(max-width: 699px) 88vw, 72vw" width="1673" height="941" alt="Vista aérea de las instalaciones de Parque de Auco al atardecer" loading="lazy" decoding="async">
                 <div class="story-slide-copy"><p>Conoce el parque</p><h3>Compara ubicaciones antes de decidir</h3><a class="button button-light" href="#lead-form" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a></div>
               </article>
             </div>
@@ -307,22 +324,22 @@
           </div>
           <div class="capacity-grid">
             <article class="capacity-card">
-              <img src="assets/capacidades/capacidad-2.webp" alt="Diagrama referencial de una sepultura de 2 capacidades" loading="lazy" decoding="async">
+              <img src="assets/capacidades/capacidad-2-640.webp" width="768" height="768" alt="Diagrama referencial de una sepultura de 2 capacidades" loading="lazy" decoding="async">
               <div><span>2 capacidades</span><h3>Alternativa compacta</h3></div>
               <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="2">Recibir información</a>
             </article>
             <article class="capacity-card">
-              <img src="assets/capacidades/capacidad-4.webp" alt="Diagrama referencial de una sepultura de 4 capacidades" loading="lazy" decoding="async">
+              <img src="assets/capacidades/capacidad-4-640.webp" width="768" height="768" alt="Diagrama referencial de una sepultura de 4 capacidades" loading="lazy" decoding="async">
               <div><span>4 capacidades</span><h3>Alternativa familiar</h3></div>
               <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="4">Recibir información</a>
             </article>
             <article class="capacity-card">
-              <img src="assets/capacidades/capacidad-6.webp" alt="Diagrama referencial de una sepultura de 6 capacidades" loading="lazy" decoding="async">
+              <img src="assets/capacidades/capacidad-6-640.webp" width="768" height="768" alt="Diagrama referencial de una sepultura de 6 capacidades" loading="lazy" decoding="async">
               <div><span>6 capacidades</span><h3>Familia ampliada</h3></div>
               <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="6">Recibir información</a>
             </article>
             <article class="capacity-card">
-              <img src="assets/capacidades/capacidad-8.webp" alt="Diagrama referencial de una sepultura de 8 capacidades" loading="lazy" decoding="async">
+              <img src="assets/capacidades/capacidad-8-640.webp" width="768" height="768" alt="Diagrama referencial de una sepultura de 8 capacidades" loading="lazy" decoding="async">
               <div><span>8 capacidades</span><h3>Mayor capacidad familiar</h3></div>
               <a class="button button-stone" href="#cotizar" data-objective="Ver precios y alternativas" data-capacity-option="8">Recibir información</a>
             </article>
@@ -333,7 +350,7 @@
 
       <section class="planning-section" id="financiamiento" aria-labelledby="finance-title">
         <div class="planning-image">
-          <img class="planning-photo" src="assets/fotos/banca-parque-auco.webp" alt="Banca bajo un árbol con vista a las áreas verdes de Parque de Auco" loading="lazy" decoding="async">
+          <img class="planning-photo" src="assets/fotos/banca-parque-auco-640.webp" srcset="assets/fotos/banca-parque-auco-640.webp 640w, assets/fotos/banca-parque-auco-1280.webp 1280w" sizes="(max-width: 699px) 100vw, 50vw" width="1538" height="1022" alt="Banca bajo un árbol con vista a las áreas verdes de Parque de Auco" loading="lazy" decoding="async">
         </div>
         <div class="planning-copy">
           <p class="eyebrow light">60 cuotas sin interés</p>
@@ -351,7 +368,7 @@
 
       <section class="arrival-section" id="como-llegar" aria-labelledby="arrival-title">
         <div class="arrival-media">
-          <img src="assets/fotos/acceso-auco-atardecer.webp" alt="Acceso principal de Parque de Auco desde Carretera San Martín" loading="lazy" decoding="async">
+          <img src="assets/fotos/acceso-auco-atardecer-640.webp" srcset="assets/fotos/acceso-auco-atardecer-640.webp 640w, assets/fotos/acceso-auco-atardecer-1280.webp 1280w" sizes="(max-width: 699px) 100vw, 50vw" width="1673" height="941" alt="Acceso principal de Parque de Auco desde Carretera San Martín" loading="lazy" decoding="async">
           <div class="arrival-distance"><strong>30–45 min*</strong><span>Colina, Chicureo y Lo Barnechea</span></div>
         </div>
         <div class="arrival-copy">
@@ -368,7 +385,7 @@
             <a class="button button-stone" href="#lead-form" data-objective="Agendar una visita" data-event="visit_booking_click">Agendar una visita</a>
           </div>
           <div class="arrival-reference">
-            <img src="assets/fotos/santuario-santa-teresita.webp" alt="Santuario de Santa Teresa de Los Andes en Auco" loading="lazy" decoding="async">
+            <img src="assets/fotos/santuario-santa-teresita-556.webp" width="556" height="359" alt="Santuario de Santa Teresa de Los Andes en Auco" loading="lazy" decoding="async">
             <p><strong>Referencia cercana</strong><span>Santuario de Santa Teresa de Los Andes, sector de Auco.</span></p>
           </div>
           <small class="arrival-note">*Tiempo referencial según punto de origen y condiciones de tránsito.</small>
@@ -387,7 +404,7 @@
           <div class="map-viewer">
             <div class="map-scroll" id="map-scroll">
               <div class="map-canvas" id="map-canvas">
-                <img src="assets/mapa/mapa-parque-auco-ilustrado.webp" alt="Mapa ilustrado del Parque de Auco con caminos y puntos de referencia" loading="lazy" decoding="async">
+                <img src="assets/mapa/mapa-parque-auco-ilustrado-640.webp" srcset="assets/mapa/mapa-parque-auco-ilustrado-640.webp 640w, assets/mapa/mapa-parque-auco-ilustrado-1280.webp 1280w" sizes="(max-width: 699px) 100vw, 64vw" width="1499" height="1049" alt="Mapa ilustrado del Parque de Auco con caminos y puntos de referencia" loading="lazy" decoding="async">
                 <button class="map-hotspot is-active" type="button" style="--x: 50%; --y: 83%;" data-map-location="atencion" aria-label="Atención Comercial"><span></span></button>
                 <button class="map-hotspot" type="button" style="--x: 61%; --y: 19%;" data-map-location="capilla" aria-label="Capilla"><span></span></button>
                 <button class="map-hotspot" type="button" style="--x: 12%; --y: 48%;" data-map-location="santuario" aria-label="Santuario Santa Teresita de Los Andes"><span></span></button>
@@ -408,7 +425,7 @@
           <aside class="map-information" aria-live="polite">
             <p id="map-info-tag">Punto de atención</p>
             <h3 id="map-info-title">Atención Comercial</h3>
-            <img class="map-info-image" id="map-info-image" src="assets/fotos/instalaciones-aereas-auco.webp" alt="Vista aérea de las instalaciones de Parque de Auco" loading="lazy" decoding="async">
+            <img class="map-info-image" id="map-info-image" src="assets/fotos/instalaciones-aereas-auco-640.webp" width="1673" height="940" alt="Vista aérea de las instalaciones de Parque de Auco" loading="lazy" decoding="async">
             <p id="map-info-description">Punto de orientación y coordinación de visitas.</p>
             <div class="map-legend" aria-label="Lugares destacados">
               <button type="button" class="is-active" data-map-location="atencion">Atención Comercial</button>
@@ -451,7 +468,7 @@
     <p class="whatsapp-global-status" data-whatsapp-status role="status" aria-live="polite"></p>
 
     <a class="sticky-whatsapp" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="floating" aria-label="Pedir información por WhatsApp">
-      <img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true">
+      <img src="assets/iconos/whatsapp-64.webp" width="64" height="64" alt="" aria-hidden="true">
       <span data-button-label>Pedir información</span>
     </a>
 
