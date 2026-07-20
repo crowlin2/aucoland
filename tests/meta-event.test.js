@@ -294,3 +294,23 @@ test("rota fondos cálidos del hero comenzando por Jardines de Auco", () => {
   assert.equal(script.includes("window.setTimeout(showNextSlide, 6500)"), true);
   assert.equal(styles.includes(".hero-slide.is-active"), true);
 });
+
+test("el formulario visible solicita solamente nombre y teléfono", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+  const form = index.match(/<form[^>]+id="lead-form"[\s\S]*?<\/form>/)?.[0] || "";
+  const visibleControls = [...form.matchAll(/<(input|select|textarea)\b([^>]*)>/g)]
+    .filter(([, , attributes]) => !/type="hidden"/.test(attributes) && !/name="bot-field"/.test(attributes))
+    .map(([, element, attributes]) => ({
+      element,
+      name: attributes.match(/name="([^"]+)"/)?.[1] || ""
+    }));
+
+  assert.deepEqual(visibleControls, [
+    { element: "input", name: "nombre" },
+    { element: "input", name: "telefono_nacional" }
+  ]);
+  assert.equal(form.includes('name="objetivo"'), false);
+  assert.equal(script.includes("payload.objetivo"), false);
+  assert.equal(script.includes('selectFormValue(form, "objetivo"'), false);
+});

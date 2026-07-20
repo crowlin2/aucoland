@@ -162,7 +162,6 @@
     }
     if (field.validity.valueMissing) {
       if (field.name === "nombre") return "Ingresa tu nombre.";
-      if (field.name === "objetivo") return "Selecciona una alternativa para continuar.";
       return "Este campo es obligatorio.";
     }
     if (field.validity.patternMismatch) {
@@ -516,12 +515,6 @@
       "Hola, soy " + cleanSentenceValue(payload.nombre) + "."
     ];
 
-    if (payload.objetivo) {
-      parts.push("Me interesa " + cleanSentenceValue(payload.objetivo).toLowerCase() + ".");
-    }
-
-
-
     if (payload.alternativa_interes) {
       parts.push("Quiero conocer la alternativa " + cleanSentenceValue(payload.alternativa_interes) + ".");
     }
@@ -553,21 +546,6 @@
     }
   }
 
-  function normalizeObjectiveValue(value) {
-    const text = String(value || "").trim();
-    const map = {
-      "Agendar visita": "Solo informaci\u00f3n",
-      "Agendar una visita": "Solo informaci\u00f3n",
-      "Visita": "Solo informaci\u00f3n",
-      "Recibir orientaci\u00f3n": "Planificaci\u00f3n futura",
-      "Cotizar primero": "Necesidad inmediata",
-      "Ver precios y alternativas": "Planificaci\u00f3n futura",
-      "Consultar por un convenio": "Planificaci\u00f3n futura",
-      "Planificando": "Planificaci\u00f3n futura",
-      "Necesidad inmediata": "Necesidad inmediata"
-    };
-    return map[text] || text;
-  }
   const leadFormModalQuery = window.matchMedia("(max-width: 699px)");
 
   function isLeadFormModalMode() {
@@ -642,9 +620,6 @@
 
     document.querySelectorAll("[data-objective]").forEach((control) => {
       control.addEventListener("click", (event) => {
-        if (form && control.dataset.objective) {
-          selectFormValue(form, "objetivo", normalizeObjectiveValue(control.dataset.objective));
-        }
 
         if (control.dataset.event === "visit_booking_click") {
           trackEvent("visit_booking_click", {
