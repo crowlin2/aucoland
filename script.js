@@ -1035,6 +1035,36 @@
     if (status) status.textContent = "Presiona el bot\u00f3n para enviar tu solicitud al asesor asignado.";
   }
 
+  function setupHeroCarousel() {
+    const carousel = document.querySelector("[data-hero-carousel]");
+    const slides = Array.from(carousel?.querySelectorAll("[data-hero-slide]") || []);
+    if (!carousel || slides.length < 2 || reduceMotion) return;
+
+    let activeIndex = 0;
+    let rotationTimer = 0;
+
+    function showNextSlide() {
+      slides[activeIndex].classList.remove("is-active");
+      activeIndex = (activeIndex + 1) % slides.length;
+      slides[activeIndex].classList.add("is-active");
+      rotationTimer = window.setTimeout(showNextSlide, 6500);
+    }
+
+    function scheduleRotation() {
+      window.clearTimeout(rotationTimer);
+      rotationTimer = window.setTimeout(showNextSlide, 6500);
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        window.clearTimeout(rotationTimer);
+      } else {
+        scheduleRotation();
+      }
+    });
+
+    scheduleRotation();
+  }
   function setupStoryCarousel() {
     const carousel = document.querySelector("[data-story-carousel]");
     const viewport = carousel?.querySelector("[data-story-viewport]");
@@ -1383,6 +1413,7 @@
   setupWhatsappCtas();
   setupForm();
   setupThankYouPage();
+  setupHeroCarousel();
   setupStoryCarousel();
   setupDirectionsTracking();
   setupMap();

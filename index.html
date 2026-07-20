@@ -35,7 +35,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Lora:wght@500;600&amp;display=swap" rel="stylesheet">
-    <link rel="preload" as="image" href="assets/fotos/panoramica-auco-atardecer.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/fotos/jardines-de-auco-premium.webp" fetchpriority="high">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -65,24 +65,28 @@
 
     <main id="inicio">
       <section class="hero" aria-labelledby="hero-title">
-        <img class="hero-image" src="assets/fotos/panoramica-auco-atardecer.webp" alt="Vista aérea del Parque de Auco y su entorno natural al atardecer" fetchpriority="high" decoding="async">
+        <div class="hero-carousel" data-hero-carousel aria-label="Vistas de Parque de Auco al atardecer">
+          <img class="hero-image hero-slide is-active" src="assets/fotos/jardines-de-auco-premium.webp" alt="Jardín familiar de Parque de Auco rodeado de vegetación en una tarde cálida" fetchpriority="high" decoding="async" data-hero-slide>
+          <img class="hero-image hero-slide" src="assets/fotos/pradera-auco-atardecer.webp" alt="" loading="lazy" decoding="async" fetchpriority="low" aria-hidden="true" data-hero-slide>
+          <img class="hero-image hero-slide" src="assets/fotos/instalaciones-auco-atardecer.webp" alt="" loading="lazy" decoding="async" fetchpriority="low" aria-hidden="true" data-hero-slide>
+        </div>
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="hero-content hero-single">
           <div class="hero-copy">
             <p class="eyebrow light">Junto al Santuario de Santa Teresa</p>
             <h1 id="hero-title" data-copy="heroTitle">Recibe información para tu familia</h1>
-            <p class="hero-lead" data-copy="heroLead">Alternativas familiares perpetuas desde 118 UF, con pie desde el 10% y 60 cuotas sin interés.</p>
-            <p class="hero-secondary" data-copy="heroSecondary">A 45 min de Lo Barnechea y a 30 min de Colina y Chicureo.*</p>
+            <p class="hero-lead" data-copy="heroLead">Alternativas familiares perpetuas, con pie desde el 10% y 60 cuotas sin interés.</p>
+            <p class="hero-secondary" data-copy="heroSecondary">A 40 minutos de Chicureo.</p>
             <div class="hero-actions">
               <a class="button button-primary" href="#lead-form" data-objective="Planificando">Recibir información</a>
             </div>
             <ul class="hero-facts" aria-label="Condiciones comerciales principales">
-              <li><strong data-config-value="price">Valor inicial</strong><span>Sepulturas perpetuas</span></li>
+
               <li><strong data-config-value="down-payment">Pie disponible</strong></li>
               <li><strong data-config-value="installments">60 cuotas sin interés</strong></li>
             </ul>
             <a class="hero-agreement-link" href="#convenios" data-config-label="agreement">Convenios disponibles</a>
-            <p class="hero-payment-note">Condiciones comerciales y convenios sujetos a evaluación, acreditación y vigencia. <span>*Tiempo referencial según punto de origen y tráfico.</span></p>
+
           </div>
         </div>
         <a class="hero-scroll" href="#lead-form">Solicitar orientación <span aria-hidden="true">↓</span></a>
@@ -455,9 +459,9 @@
 
     <p class="whatsapp-global-status" data-whatsapp-status role="status" aria-live="polite"></p>
 
-    <a class="sticky-whatsapp" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="floating" aria-label="Hablar con un asesor por WhatsApp">
+    <a class="sticky-whatsapp" href="#cotizar" data-objective="Cotizar primero" data-whatsapp-cta data-contact-source="floating" aria-label="Pedir información por WhatsApp">
       <img src="assets/iconos/whatsapp.png" alt="" aria-hidden="true">
-      <span data-button-label>WhatsApp</span>
+      <span data-button-label>Pedir información</span>
     </a>
 
     <footer class="site-footer">

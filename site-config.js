@@ -13,8 +13,8 @@
     ]),
     copy: Object.freeze({
       heroTitle: "Planifica una sepultura familiar con tranquilidad",
-      heroLead: "Alternativas familiares perpetuas desde 118 UF, con pie desde el 10% y 60 cuotas sin interés.",
-      heroSecondary: "A 45 min de Lo Barnechea y a 30 min de Colina y Chicureo.*"
+      heroLead: "Alternativas familiares perpetuas, con pie desde el 10% y 60 cuotas sin interés.",
+      heroSecondary: "A 40 minutos de Chicureo."
     })
   });
 })();

@@ -2903,3 +2903,87 @@ textarea { resize: vertical; }
   .premium-space-card:nth-child(even) .premium-space-media { order: 2; }
   .premium-space-card:nth-child(even) .premium-space-copy { order: 1; }
 }
+
+/* Hero carousel and lower-friction WhatsApp CTA */
+.hero-carousel {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hero-shade { z-index: 1; }
+.hero-content,
+.hero-scroll { z-index: 2; }
+.hero-slide {
+  opacity: 0;
+  transform: scale(1.025);
+  transition: opacity 1.25s ease, transform 7.5s ease;
+}
+
+.hero-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 27rem;
+}
+
+.sticky-whatsapp {
+  animation: whatsapp-enter 600ms 900ms both, whatsapp-attention 5.5s 2.4s ease-in-out infinite;
+}
+
+@keyframes whatsapp-attention {
+  0%, 76%, 100% { box-shadow: 0 16px 36px rgba(16,47,41,0.28); }
+  84% { box-shadow: 0 16px 36px rgba(16,47,41,0.28), 0 0 0 8px rgba(46,118,87,0.16); }
+  92% { box-shadow: 0 16px 36px rgba(16,47,41,0.28), 0 0 0 14px rgba(46,118,87,0); }
+}
+
+@media (max-width: 699px) {
+  .site-footer { padding-bottom: 6.75rem; }
+
+  .sticky-whatsapp {
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    left: 0.75rem;
+    width: auto;
+    max-width: 24rem;
+    height: auto;
+    min-height: 3.75rem;
+    margin-inline: auto;
+    padding: 0.42rem 1.15rem 0.42rem 0.5rem;
+    font-size: 1rem;
+  }
+
+  .sticky-whatsapp span {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    white-space: nowrap;
+  }
+
+  .sticky-whatsapp img {
+    width: 2.85rem;
+    height: 2.85rem;
+    flex-basis: 2.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-shade { z-index: 1; }
+.hero-content,
+.hero-scroll { z-index: 2; }
+.hero-slide {
+    opacity: 0 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .hero-slide.is-active { opacity: 1 !important; }
+}

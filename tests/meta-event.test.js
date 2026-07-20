@@ -265,3 +265,32 @@ test("muestra el hero de inmediato y conserva el movimiento del resto del sitio"
   assert.equal(styles.includes(".reveal-target {"), true);
   assert.equal(script.includes('".full-form"'), true);
 });
+
+test("simplifica el hero y mantiene la oferta principal sin mostrar precio", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const config = fs.readFileSync(path.join(root, "site-config.js"), "utf8");
+
+  const heroStart = index.indexOf('<section class="hero"');
+  const hero = index.slice(heroStart, index.indexOf("</section>", heroStart));
+  assert.equal(hero.includes('data-config-value="price"'), false);
+  assert.equal(hero.includes("desde 118 UF"), false);
+  assert.equal(hero.includes("Pie disponible"), true);
+  assert.equal(hero.includes("60 cuotas sin interés"), true);
+  assert.equal(hero.includes("A 40 minutos de Chicureo."), true);
+  assert.equal(hero.includes("Condiciones comerciales y convenios"), false);
+  assert.equal(config.includes('heroSecondary: "A 40 minutos de Chicureo."'), true);
+  assert.equal(index.includes('<span data-button-label>Pedir información</span>'), true);
+});
+
+test("rota fondos cálidos del hero comenzando por Jardines de Auco", () => {
+  const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
+
+  assert.equal(index.includes('href="assets/fotos/jardines-de-auco-premium.webp" fetchpriority="high"'), true);
+  assert.equal(index.includes('class="hero-image hero-slide is-active"'), true);
+  assert.equal(index.match(/data-hero-slide/g)?.length, 3);
+  assert.equal(script.includes("function setupHeroCarousel()"), true);
+  assert.equal(script.includes("window.setTimeout(showNextSlide, 6500)"), true);
+  assert.equal(styles.includes(".hero-slide.is-active"), true);
+});
